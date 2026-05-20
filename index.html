@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt Engineering Techniques — TERACO</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  background: #f5f6fa;
+  color: #1a1a2e;
+  padding: 32px 20px 60px;
+  min-height: 100vh;
+}
+
+.header { text-align: center; margin-bottom: 36px; }
+.header h1 { font-size: 1.45rem; font-weight: 800; color: #1a1a2e; letter-spacing: 0.02em; }
+.header .sub { font-size: 0.75rem; color: #888; margin-top: 5px; }
+.header .hint { font-size: 0.72rem; color: #aaa; margin-top: 3px; }
+
+.cat-label {
+  grid-column: 1 / -1;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #888;
+  padding: 10px 0 6px;
+  border-bottom: 2px solid #e8e8f0;
+  margin-bottom: 4px;
+}
+
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 900px; margin: 0 auto; }
+
+.card {
+  background: #fff;
+  border: 1.5px solid #e8e8f0;
+  border-radius: 14px;
+  padding: 16px 16px 13px;
+  cursor: pointer;
+  transition: border-color 0.18s, box-shadow 0.18s, transform 0.15s;
+}
+.card:hover { border-color: #6c63ff; box-shadow: 0 4px 18px rgba(108,99,255,0.12); transform: translateY(-2px); }
+.card.open { border-color: #6c63ff; background: #faf9ff; }
+.card .num { font-size: 0.6rem; color: #ccc; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 4px; }
+.card .en  { font-size: 0.82rem; font-weight: 800; color: #1a1a2e; line-height: 1.35; margin-bottom: 3px; }
+.card .kana { font-size: 0.65rem; color: #aaa; margin-bottom: 8px; line-height: 1.4; }
+.card .desc { font-size: 0.7rem; color: #555; line-height: 1.6; }
+.tag {
+  display: inline-block; font-size: 0.58rem; padding: 3px 10px;
+  border-radius: 99px; margin-top: 10px; font-weight: 700; letter-spacing: 0.04em;
+}
+.t-basic  { background: #e8faf2; color: #27ae60; }
+.t-core   { background: #e8f0ff; color: #3a7bd5; }
+.t-reason { background: #f0ecff; color: #6c63ff; }
+.t-struct { background: #fffbe8; color: #e0a800; }
+.t-adv    { background: #fff0f3; color: #e05c6f; }
+
+.panel {
+  display: none; grid-column: 1 / -1;
+  background: #fff; border: 1.5px solid #6c63ff;
+  border-radius: 16px; padding: 28px 30px;
+  animation: fadeIn 0.2s ease;
+}
+.panel.show { display: block; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(-6px); } to { opacity:1; transform: translateY(0); } }
+
+.p-en   { font-size: 1.1rem; font-weight: 800; color: #1a1a2e; }
+.p-kana { font-size: 0.72rem; color: #aaa; margin: 3px 0 14px; }
+
+/* 提唱者バッジ */
+.p-author {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: #f5f6fa; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
+}
+.p-author-icon { font-size: 1rem; margin-top: 1px; flex-shrink: 0; }
+.p-author-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #aaa; margin-bottom: 4px; }
+.p-author-name  { font-size: 0.78rem; font-weight: 700; color: #1a1a2e; margin-bottom: 2px; }
+.p-author-kana  { font-size: 0.68rem; color: #6c63ff; margin-bottom: 4px; }
+.p-author-cite  { font-size: 0.68rem; color: #888; line-height: 1.6; }
+
+.p-desc { font-size: 0.8rem; color: #333; line-height: 1.9; margin-bottom: 22px; }
+
+.p-section-ttl {
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #6c63ff; margin-bottom: 10px;
+}
+
+.example {
+  background: #faf9ff; border-left: 3px solid #6c63ff; border-radius: 8px;
+  padding: 14px 18px; font-size: 0.74rem; color: #333;
+  white-space: pre-wrap; line-height: 1.85;
+  font-family: 'Menlo', 'Courier New', monospace; margin-bottom: 24px;
+}
+
+/* テンプレート */
+.template-box {
+  background: #fafafe; border: 1.5px solid #e0deff;
+  border-radius: 12px; padding: 20px 22px; margin-bottom: 4px;
+}
+.tmpl-intro { font-size: 0.72rem; color: #666; margin-bottom: 18px; line-height: 1.7; }
+.template-field { margin-bottom: 14px; }
+.template-field label {
+  display: block; font-size: 0.65rem; font-weight: 700;
+  color: #6c63ff; margin-bottom: 5px; letter-spacing: 0.04em;
+}
+.template-field .field-note {
+  font-size: 0.62rem; color: #aaa; font-weight: 400; margin-left: 6px;
+}
+.template-field input,
+.template-field textarea {
+  width: 100%; border: 1.5px solid #e0deff; border-radius: 8px;
+  padding: 9px 13px; font-size: 0.76rem; color: #1a1a2e;
+  font-family: inherit; background: #fff; outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s; resize: vertical;
+}
+.template-field input:focus,
+.template-field textarea:focus { border-color: #6c63ff; box-shadow: 0 0 0 3px rgba(108,99,255,0.08); }
+.template-field textarea { min-height: 80px; }
+.template-field textarea.main-field { min-height: 110px; font-size: 0.78rem; }
+
+/* ボタン */
+.btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+.preview-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #f0eeff; color: #6c63ff; border: 1.5px solid #c4b8ff;
+  border-radius: 8px; padding: 10px 22px; font-size: 0.74rem; font-weight: 700;
+  cursor: pointer; transition: background 0.15s, transform 0.12s; font-family: inherit;
+}
+.preview-btn:hover { background: #e4dfff; transform: translateY(-1px); }
+.copy-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #6c63ff; color: #fff; border: none;
+  border-radius: 8px; padding: 10px 22px; font-size: 0.74rem; font-weight: 700;
+  cursor: pointer; transition: background 0.15s, transform 0.12s; font-family: inherit;
+}
+.copy-btn:hover { background: #5549e0; transform: translateY(-1px); }
+.copy-btn.copied { background: #27ae60; }
+
+/* プレビュー */
+.prompt-preview { display: none; margin-top: 16px; background: #f0eeff; border: 1.5px solid #c4b8ff; border-radius: 10px; overflow: hidden; }
+.prompt-preview.show { display: block; }
+.prompt-preview-label {
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: #6c63ff; padding: 9px 16px 7px; border-bottom: 1px solid #ddd6ff;
+}
+.prompt-preview-text {
+  padding: 14px 18px; font-size: 0.76rem; color: #1a1a2e;
+  white-space: pre-wrap; line-height: 1.85;
+  font-family: 'Menlo', 'Courier New', monospace;
+}
+
+@media (max-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 400px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🧠 Prompt Engineering — 主要テクニック15選</h1>
+  <p class="sub">論文・業界標準で定義された正式名称のみ掲載</p>
+  <p class="hint">カードをクリックすると解説・提唱者・テンプレートが表示されます</p>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+const cards = [
+  // ─── 基本系 ───────────────────────────────────────
+  {
+    cat: "🟢  基本系",
+    en: "Zero-Shot Prompting",
+    kana: "ゼロショット・プロンプティング",
+    tag: "t-basic", tagLabel: "基本",
+    desc: "例を一切見せずに、指示だけでAIに動いてもらう",
+    authorName: "Brown et al.",
+    authorKana: "ブラウン ら",
+    cite: "2020年 論文「Language Models are Few-Shot Learners」（GPT-3論文）",
+    detail: "「ゼロショット」とは、お手本（ショット）をゼロ＝まったく見せずに指示だけで動かすやり方です。「これをやってください」と書くだけなので、最もシンプルで気軽に試せます。まず最初にこれを試して、うまくいかなければ次のFew-Shotに切り替えるのが基本の流れです。",
+    ex: `【プロンプト例】
+以下のテキストの感情を分類してください。
+「positive」「negative」「neutral」の3択で答えてください。
+
+テキスト：「スマホ教室はとても丁寧でわかりやすかったです」
+
+━━━━━━━━━━━━━━━━━
+【ポイント】
+例を一切見せず、指示だけで動かすのがゼロショット。
+まず最初に試す出発点として使う。`,
+    tmplIntro: "AIにやってほしいことを、そのまま自由に書いてください。お手本や例は不要です。",
+    fields: [
+      { label: "AIへの指示・依頼内容", note: "（自由に書いてOK）", type: "textarea", cls: "main-field", placeholder: "例：以下のテキストを「やさしい言葉」に言い換えてください。\n\nテキスト：「認証エラーが発生しました」" },
+    ],
+    build: (v) => v[0]
+  },
+  {
+    en: "Few-Shot Prompting",
+    kana: "フューショット・プロンプティング",
+    tag: "t-basic", tagLabel: "基本",
+    desc: "「こんな感じで」と例を2〜3個見せてから本番をお願いする",
+    authorName: "Brown et al.",
+    authorKana: "ブラウン ら",
+    cite: "2020年 論文「Language Models are Few-Shot Learners」（GPT-3論文）",
+    detail: "「こういう感じでやってほしい」という例（ショット）を少数（フュー）見せてから本番の依頼をする手法です。例を2〜3セット見せるだけで、AIが出力のトーン・形式・言い回しをしっかり学んでくれます。「思ったのと違う」が起きやすい場面で特に効果的です。",
+    ex: `【プロンプト例】
+以下のルールで文章を言い換えてください。
+
+例1）元：「エラーが発生しました」
+　　変換後：「うまく動かないときがありました」
+
+例2）元：「設定を変更してください」
+　　変換後：「少し設定を変えてみましょう」
+
+本番）元：「パスワードの認証に失敗しました」
+　　変換後：
+
+━━━━━━━━━━━━━━━━━
+【ポイント】
+例を見せることでトーンや言い回しを完全にコントロールできる。`,
+    tmplIntro: "「お手本（例）」を2つ書いてから、本番のお願いを書きましょう。例を見せるほどAIが意図を理解します。",
+    fields: [
+      { label: "どんな変換・作業をしてほしいか", note: "（ルールや目的）", type: "input", placeholder: "例：難しい言葉をやさしく言い換える" },
+      { label: "お手本①　変換前", note: "", type: "input", placeholder: "" },
+      { label: "お手本①　変換後（こうしてほしい）", note: "", type: "input", placeholder: "" },
+      { label: "お手本②　変換前", note: "", type: "input", placeholder: "" },
+      { label: "お手本②　変換後（こうしてほしい）", note: "", type: "input", placeholder: "" },
+      { label: "本番　実際に変換・処理してほしい内容", note: "（自由に書いてOK）", type: "textarea", cls: "main-field", placeholder: "" },
+    ],
+    build: (v) =>
+`以下のルール・目的で対応してください。
+ルール：${v[0]}
+
+お手本①）
+　変換前：「${v[1]}」
+　変換後：「${v[2]}」
+
+お手本②）
+　変換前：「${v[3]}」
+　変換後：「${v[4]}」
+
+本番）
+${v[5]}`
+  },
+  {
+    en: "Role Prompting",
+    kana: "ロール・プロンプティング（別名：Persona Prompting）",
+    tag: "t-core", tagLabel: "コア",
+    desc: "AIに「〇〇の専門家」という役割を与えて回答の質を上げる",
+    authorName: "OpenAI / Anthropic",
+    authorKana: "オープンエーアイ ／ アンソロピック",
+    cite: "OpenAI・Anthropic 両社の公式ガイドラインで推奨 / 業界標準手法",
+    detail: "最初に「あなたは〇〇の専門家です」と役割を設定するだけで、AIの回答がぐっと専門的になります。役職・経験年数・得意分野を具体的に書けば書くほど、その専門家らしい言葉遣いや視点で答えてくれます。最も多く使われている基本テクニックです。",
+    ex: `【プロンプト例】
+あなたは15年のキャリアを持つ
+シニアUXデザイナーです。
+
+スマホ教室のWebサイトのトップページについて、
+60代の初心者ユーザーが迷わないための
+改善点を3つ教えてください。
+
+━━━━━━━━━━━━━━━━━
+【ポイント】
+役割を具体的に設定するほど
+アウトプットの専門性と質が上がる。`,
+    tmplIntro: "AIに演じてほしい役割を設定してから、実際にお願いしたいことを自由に書いてください。",
+    fields: [
+      { label: "AIに演じてほしい役割・肩書き", note: "（できるだけ具体的に）", type: "input", placeholder: "例：10年のキャリアを持つシニアマーケター" },
+      { label: "その専門家に聞きたいこと・やってほしいこと", note: "（自由に書いてOK）", type: "textarea", cls: "main-field", placeholder: "例：スマホ教室の新規受講生を増やすために、SNSをどう活用すればいいか教えてください。" },
+      { label: "回答の形式（任意）", note: "（省略してもOK）", type: "input", placeholder: "例：箇条書きで3点　／　わかりやすい言葉で" },
+    ],
+    build: (v) =>
+`あなたは${v[0]}です。
+
+${v[1]}${v[2] ? "\n\n回答は" + v[2] + "でお願いします。" : ""}`
+  },
+
+  // ─── 推論強化系 ──────────────────────────────────
+  {
+    cat: "🔵  推論強化系",
+    en: "Chain-of-Thought Prompting (CoT)",
+    kana: "チェーン・オブ・ソート・プロンプティング",
+    tag: "t-reason", tagLabel: "推論強化",
+    desc: "「ステップで考えて」と一言加えるだけで推論の精度が上がる",
+    authorName: "Wei et al.",
+    authorKana: "ウェイ ら",
+    cite: "2022年 論文「Chain-of-Thought Prompting Elicits Reasoning in LLMs」Google Brain",
+    detail: "「ステップバイステップで考えてください」と一言加えるだけで、AIが思考プロセスを段階的に見せながら答えてくれます。2022年にGoogleのAI研究チームが発表。複雑な計画・分析・判断が必要なときに特に効果的です。「順番に考えて」「手順を示して」でも同じ効果があります。",
+    ex: `【プロンプト例】
+以下の課題について、ステップバイステップで
+思考プロセスを示してから結論を出してください。
+
+課題：スマホ教室の受講者を3ヶ月で1.5倍にするには？
+
+ステップ1：現状の課題を整理する
+ステップ2：考えられる施策を列挙する
+ステップ3：優先度をつけて結論を出す
+
+━━━━━━━━━━━━━━━━━
+【ポイント】
+「ステップバイステップで」の一言を加えるだけで
+論理性と精度が大きく変わる。`,
+    tmplIntro: "考えてほしいテーマや課題を書いてください。AIが順番に考えてから結論を出します。",
+    fields: [
+      { label: "考えてほしい課題・問い", note: "（自由に書いてOK）", type: "textarea", cls: "main-field", placeholder: "例：スマホ教室の受講者をこれから3ヶ月で増やすためにどうすればいいか？" },
+      { label: "ステップ数（任意）", note: "（省略すると自動で考えてくれます）", type: "input", placeholder: "例：3" },
+    ],
+    build: (v) =>
+`以下の課題について、ステップバイステップで思考プロセスを示してから結論を出してください。
+
+課題：${v[0]}${v[1] ? "\n\n※ステップは" + v[1] + "つで考えてください。" : ""}`
+  },
+  {
+    en: "Self-Consistency",
+    kana: "セルフ・コンシステンシー",
+    tag: "t-reason", tagLabel: "推論強化",
+    desc: "同じ問いを複数の視点で考えさせて、いちばん確からしい答えを選ぶ",
+    authorName: "Wang et al.",
+    authorKana: "ワン ら",
+    cite: "2022年 論文「Self-Consistency Improves Chain of Thought Reasoning in LLMs」Google Brain",
+    detail: "同じ問いを「複数の視点・角度」から独立して考えさせて、最も一貫性のある答えを選ばせる手法です。一つの回答だけでなく、複数の推論を比較することで精度が上がります。「本当にこれでいいのか確かめたい」「抜け漏れなく考えたい」ときに使いましょう。",
+    ex: `【プロンプト例】
+以下の問いを3つの異なる視点でそれぞれ独立して考えてください。
+
+問い：「新規受講生が申し込みをためらう主な理由は？」
+
+視点A：心理・感情の観点から
+視点B：情報・認知の観点から
+視点C：環境・状況の観点から
+
+3つを比較して最も説得力のある結論をまとめてください。
+
+━━━━━━━━━━━━━━━━━
+【ポイント】
+複数の推論を出させてから
+一番一貫性のある答えを選ぶ。`,
+    tmplIntro: "考えてほしい問いと、3つの視点を入力してください。視点を変えて比べることで精度が上がります。",
+    fields: [
+      { label: "考えてほしい問い・テーマ", note: "（自由に書いてOK）", type: "textarea", cls: "main-field", placeholder: "例：新規受講生が申し込みをためらう主な理由は何か？" },
+      { label: "視点 A", note: "（どんな角度から考えるか）", type: "input", placeholder: "例：心理・感情の観点から" },
+      { label: "視点 B", note: "", type: "input", placeholder: "例：情報・認知の観点から" },
+      { label: "視点 C", note: "", type: "input", placeholder: "例：環境・状況の観点から" },
+    ],
+    build: (v) =>
+`以下の問いを3つの異なる視点でそれぞれ独立して考えてください。
+
+問い：「${v[0]}」
+
+視点A：${v[1]}
+視点B：${v[2]}
+視点C：${v[3]}
+
+3つを比較して、最も説得力のある結論をまとめてください。`
+  },
+  {
+    en: "Tree of Thoughts (ToT)",
+    kana: "ツリー・オブ・ソーツ",
+    tag: "t-reason", tagLabel: "推論強化",
+    desc: "アイデアを木の枝のように広げてから絞り込む発想法",
+    authorName: "Yao et al.",
+    authorKana: "ヤオ ら",
+    cite: "2023年 論文「Tree of Thoughts: Deliberate Problem Solving with LLMs」Princeton大学 & Google",
+    detail: "一本道で考えるのではなく、まず複数の方向性（枝）を広げてから、それぞれを評価して最良の枝を選んでいく手法です。Chain-of-Thoughtの進化版。創造的なアイデア出しや、複雑な戦略を考えるときに特に有効です。「広げてから絞る」思考法です。",
+    ex: `【プロンプト例】
+アイデアを木構造で展開してください。
+
+テーマ：「AIを活用した新しいスマホ教室の形」
+
+① まず3つの大きな方向性（枝）を出す
+② 各方向性から2つの具体策（小枝）を出す
+③ 全体を評価して最も有望な枝を選ぶ
+④ 選んだ枝をさらに詳細化する
+
+━━━━━━━━━━━━━━━━━
+【ポイント】
+「広げてから絞る」木構造の思考で
+アイデアの質と網羅性が上がる。`,
+    tmplIntro: "アイデアを広げたいテーマを書いてください。「広げてから絞る」流れで考えてくれます。",
+    fields: [
+      { label: "アイデアを広げたいテーマ・お題", note: "（自由に書いてOK）", type: "textarea", cls: "main-field", placeholder: "例：AIを活用した新しいスマホ教室の形" },
+      { label: "大きな方向性をいくつ出すか", note: "（省略すると3つ）", type: "input", placeholder: "3" },
+      { label: "各方向から具体策をいくつ出すか", note: "（省略すると2つ）", type: "input", placeholder: "2" },
+    ],
+    build: (v) =>
+`アイデアを木構造で展開してください。
+
+テーマ：「${v[0]}」
+
+① まず${v[1] || "3"}つの大きな方向性（枝）を出す
+② 各方向性から${v[2] || "2"}つの具体策（小枝）を出す
+③ 全体を評価して最も有望な枝を選ぶ
+④ 選んだ枝をさらに詳細化する`
+  },
+
+  // ─── 構造・設計系 ────────────────────────────────
+  {
+    cat: "🟡  構造・設計系",
+    en: "Prompt Chaining",
+    kana: "プロンプト・チェイニング",
+    tag: "t-struct", tagLabel: "構造設計",
+    desc: "大きな仕事を小さく分けて、順番につなげて頼む",
+    authorName: "Wu et al. / Anthropic",
+    authorKana: "ウー ら ／ アンソロピック",
+    cite: "2022年 論文「AI Chains」/ Anthropic 公式ドキュメント",
+    detail: "複雑な作業を一度にお願いするのではなく、小さなステップに分けて「前の出力を次の入力にする」形でつなげていく手法です。各ステップで確認できるので品質が上がり、失敗しても途中からやり直せます。チラシ制作・記事作成など複数工程が必要な作業に最適です。",
+    ex: `【プロンプト例（3段階チェーン）】
+
+▶ プロンプト①
+「AIエージェント講座」のキャッチコピーを5案出してください。
+
+↓（出力を受け取り、1案を選んでから送る）
+
+▶ プロンプト②
+選んだキャッチコピーをベースに
+チラシの本文（200字）を書いてください。
+
+↓（出力を受け取ってから送る）
+
+▶ プロンプト③
+上の本文をLINE配信用（80字以内）に要約してください。
+
+━━━━━━━━━━━━━━━━━
+【ポイント】
+一度に全部頼まず段階的につなげることで
+各工程の品質が上がる。`,
+    tmplIntro: "最終的に作りたいものと、3つのステップを書いてください。ステップごとに別々に送ります。",
+    fields: [
+      { label: "最終的に作りたいもの・ゴール", note: "", type: "input", placeholder: "例：スマホ教室の新講座チラシ一式" },
+      { label: "ステップ①　最初にやること", note: "（自由に書いてOK）", type: "textarea", placeholder: "例：「はじめてのスマホ講座」のキャッチコピーを5案考えてください。" },
+      { label: "ステップ②　次にやること", note: "（ステップ①の出力を渡してから送る）", type: "textarea", placeholder: "例：選んだキャッチコピーをもとに、チラシ本文（200字）を書いてください。" },
+      { label: "ステップ③　最後にやること", note: "（ステップ②の出力を渡してから送る）", type: "textarea", placeholder: "例：上の本文をLINE配信用（80字以内）に要約してください。" },
+    ],
+    build: (v) =>
+`【ゴール】${v[0]}
+
+━━ ステップ①（最初に送るプロンプト）━━
+${v[1]}
+
+━━━━━━━━━━━━━━━━━
+※ ステップ①の出力を確認・選択したら、次を送ってください。
+
+━━ ステップ②（次に送るプロンプト）━━
+${v[2]}
+
+━━━━━━━━━━━━━━━━━
+※ ステップ②の出力を確認したら、次を送ってください。
+
+━━ ステップ③（最後に送るプロンプト）━━
+${v[3]}`
+  },
+  {
+    en: "Flipped Interaction Pattern",
+    kana: "フリップド・インタラクション・パターン",
+    tag: "t-struct", tagLabel: "構造設計",
+    desc: "「何を伝えればいいかわからない」ときにAIに質問してもらう",
+    authorName: "White et al.",
+    authorKana: "ホワイト ら",
+    cite: "2023年 論文「A Prompt Pattern Catalog to Enhance Prompt Engineering with ChatGPT」Vanderbilt大学（バンダービルト大学）",
+    detail: "普通は「人がAIに質問する」のを反転（フリップ）させて、「AIが人に質問する」形にする手法です。「何を伝えればいいかわからない」「どこから始めればいいかわからない」というときに特に便利。AIが必要な情報を聞き出してから作業を始めてくれます。",
+    ex: `【プロンプト例】
+私のスマホ教室の案内チラシを作りたいです。
+
+まず、高品質なチラシを作るために必要な情報を
+一度に1問ずつ質問してください。
+
+十分な情報が集まったと判断したら
+「では作成します」と宣言してから
+制作を開始してください。
+
+━━━━━━━━━━━━━━━━━
+【ポイント】
+「一度に1問ずつ」と加えると
+質問が整理されてやりとりしやすくなる。`,
+    tmplIntro: "AIに作ってもらいたいものを書いてください。AIが必要な情報を質問してから作り始めます。",
+    fields: [
+      { label: "AIに作ってほしいもの・やってほしいこと", note: "（自由に書いてOK）", type: "textarea", cls: "main-field", placeholder: "例：スマホ教室の新講座の案内チラシを作りたいです。" },
+      { label: "質問が終わったら何と言ってから始めてほしいか", note: "（任意）", type: "input", placeholder: "例：では作成します" },
+    ],
+    build: (v) =>
+`${v[0]}
+
+まず、これを高品質に仕上げるために必要な情報を、一度に1問ずつ質問してください。
+
+十分な情報が集まったと判断したら「${v[1] || "では作成します"}」と宣言してから作業を開始してください。`
+  },
+  {
+    en: "Meta Prompting",
+    kana: "メタ・プロンプティング",
+    tag: "t-struct", tagLabel: "構造設計",
+    desc: "「どうお願いすればいいか」をAI自身に考えてから実行させる",
+    authorName: "Suzgun &amp; Kalai",
+    authorKana: "スズグン ＆ カライ",
+    cite: "2024年 論文「Meta-Prompting: Enhancing Language Models with Task-Agnostic Scaffolding」Microsoft Research",
+    detail: "タスクをどう解くかではなく、「そのタスクに最適なお願いの仕方」自体をAIに設計してもらい、そのまま実行させる上級手法です。「うまいお願いの仕方がわからない」「最高の結果を出したい」ときに、AIが最善のプロンプト構造を考えてから動いてくれます。",
+    ex: `【プロンプト例】
+私は「60代向けスマホ講座」の
+受講案内文を作りたいと思っています。
+
+このタスクを最も効果的に達成するための
+プロンプト構造を設計してください。
+
+設計後、そのプロンプトを実際に実行して
+受講案内文を出力してください。
+
+━━━━━━━━━━━━━━━━━
+【ポイント】
+「プロンプトを設計させてから実行させる」
+という二段階の使い方。`,
+    tmplIntro: "最終的に達成したいことを書いてください。AIが最適なお願いの仕方を考えてから実行します。",
+    fields: [
+      { label: "達成したいこと・作りたいもの", note: "（自由に書いてOK）", type: "textarea", cls: "main-field", placeholder: "例：60代向けスマホ教室の受講案内文を作りたい。読んだ人が「参加してみたい」と思えるものにしたい。" },
+    ],
+    build: (v) =>
+`私は以下のことを達成したいと思っています。
+
+目標：${v[0]}
+
+このタスクを最も効果的に達成するためのプロンプト構造を設計してください。
+
+設計後、そのプロンプトを実際に実行して成果物を出力してください。`
+  },
+  {
+    en: "Directional Stimulus Prompting (DSP)",
+    kana: "ダイレクショナル・スティミュラス・プロンプティング",
+    tag: "t-struct", tagLabel: "構造設計",
+    desc: "答えを決めずに「こういう方向で」とヒントだけ渡す",
+    authorName: "Li et al.",
+    authorKana: "リー ら",
+    cite: "2023年 論文「Guiding Large Language Models via Directional Stimulus Prompting」",
+    detail: "答えを直接指示するのではなく、「こういうキーワードを活かして」「このトーンで」といった方向性のヒント（スティミュラス＝刺激）だけを渡して、AIの自由な発想を引き出す手法です。「こうしてほしい」と決めすぎると創造性が下がるため、方向性だけ渡すのがコツです。",
+    ex: `【プロンプト例】
+スマホ教室の新コースのネーミングを考えてください。
+
+ヒント（これらのキーワードを活かして）：
+・「安心」「はじめての」「つながり」
+・堅苦しくない、温かみのある表現
+・60代が親しみやすいトーン
+
+━━━━━━━━━━━━━━━━━
+【ポイント】
+答えを押しつけず「方向性のヒント」を渡すことで
+AIの創造性を活かした出力が得られる。`,
+    tmplIntro: "AIに考えてほしいことと、方向性のヒントを書いてください。答えは決めずにヒントだけ渡します。",
+    fields: [
+      { label: "AIに考えてほしいこと・お題", note: "（自由に書いてOK）", type: "textarea", cls: "main-field", placeholder: "例：スマホ教室の新しいコース名を考えてください。" },
+      { label: "活かしてほしいキーワードや雰囲気", note: "（方向性のヒント）", type: "textarea", placeholder: "例：「安心」「はじめて」「つながり」\nやわらかく温かみのある表現\n60代が親しみやすいトーン" },
+      { label: "避けてほしい表現・トーン", note: "（任意）", type: "input", placeholder: "例：堅い表現、横文字・カタカナが多いもの" },
+    ],
+    build: (v) =>
+`${v[0]}
+
+ヒント（以下を意識して考えてください）：
+${v[1]}${v[2] ? "\n\n避けてほしい表現：" + v[2] : ""}`
+  },
+
+  {
+    en: "Step-Back Prompting",
+    kana: "ステップバック・プロンプティング",
+    tag: "t-struct", tagLabel: "構造設計",
+    desc: "一歩引いた大きな問いを先に考えさせてから本題に答えさせる",
+    authorName: "Zheng et al.",
+    authorKana: "ジョン ら",
+    cite: "2023年 論文「Take a Step Back: Evoking Reasoning via Abstraction in Large Language Models」Google DeepMind",
+    detail: "本題に答える前に、「そもそも〇〇とはどういうことか？」という一歩引いた抽象的な問いを先に考えさせる手法です。背景知識や原則を先に整理することで、本来の問いへの回答がより的確・深くなります。「なんだか的外れな回答が返ってくる」と感じるときに特に効果的です。",
+    ex: `【プロンプト例】
+本題の問いに答える前に、まず一歩引いた
+「より大きな問い」に答えてください。
+
+一歩引いた問い：
+「そもそも、シニア向けの学習で大切なことは
+何か？」
+
+本題：
+「60代のスマホ初心者が、操作を3日で覚えるために
+効果的なレッスン構成を提案してください。」
+
+━━━━━━━━━━━━━━━━━
+【ポイント】
+背景にある原則・知識を先に整理してから
+本題を考えることで回答の質が上がる。`,
+    tmplIntro: "本題の問いと、その背景にある「一歩引いた大きな問い」を書いてください。背景から考えることで回答が深くなります。",
+    fields: [
+      { label: "一歩引いた大きな問い（そもそも論・背景・原則）", note: "（例：「そもそも〇〇とはどういうことか？」）", type: "textarea", placeholder: "例：そもそも、シニア向けの学習で大切なことは何か？" },
+      { label: "本来答えてほしい問い・依頼内容", note: "（自由に書いてOK）", type: "textarea", cls: "main-field", placeholder: "例：60代のスマホ初心者が操作を3日で覚えるための、効果的なレッスン構成を提案してください。" },
+    ],
+    build: (v) =>
+`本題の問いに答える前に、まず一歩引いた「より大きな問い」に答えてください。
+
+一歩引いた問い：
+「${v[0]}」
+
+その知識・考えをもとに、本題に答えてください：
+「${v[1]}」`
+  },
+  {
+    en: "Least-to-Most Prompting",
+    kana: "リースト・トゥ・モスト・プロンプティング",
+    tag: "t-struct", tagLabel: "構造設計",
+    desc: "複雑な問いを簡単なサブ問題に分解して、やさしい順に解かせる",
+    authorName: "Zhou et al.",
+    authorKana: "ジョウ ら",
+    cite: "2022年 論文「Least-to-Most Prompting Enables Complex Reasoning in Large Language Models」Google",
+    detail: "「難しい問い」に一気に答えさせるのではなく、まず「簡単なサブ問題」に分解して、やさしいものから順番に解かせる手法です。前のステップの答えが次のヒントになるため、複雑な問題でも段階的に正確な答えにたどり着けます。Chain-of-Thoughtの弱点（一気に難しい推論が必要な問い）を補う手法です。",
+    ex: `【プロンプト例】
+以下の複雑な問いを、まず簡単なサブ問題に
+分解してください。
+次に、やさしい問いから順番に答えて
+最終的な結論にたどり着いてください。
+
+問い：「スマホ教室を開業するために
+必要な準備をすべて教えてください」
+
+（分解例）
+・まず「どんな準備カテゴリがあるか」を整理する
+・次に「各カテゴリで最初にやることは何か」を答える
+・最後に「優先順位をつけてまとめる」
+
+━━━━━━━━━━━━━━━━━
+【ポイント】
+複雑な問いほど、まず分解してから
+やさしい順に解いていくと精度が上がる。`,
+    tmplIntro: "難しくて一気に答えにくい問いを書いてください。AIがサブ問題に分解してやさしい順に解いていきます。",
+    fields: [
+      { label: "一気に答えにくい複雑な問い・依頼", note: "（自由に書いてOK）", type: "textarea", cls: "main-field", placeholder: "例：スマホ教室を開業するために必要な準備をすべて教えてください。" },
+      { label: "分解するサブ問題の数（任意）", note: "（省略すると自動で分解します）", type: "input", placeholder: "例：3〜4つ" },
+    ],
+    build: (v) =>
+`以下の問いを、まず簡単なサブ問題に分解してください。
+次に、やさしい問いから順番に答えて、最終的な結論にたどり着いてください。${v[1] ? "\nサブ問題は" + v[1] + "に分けてください。" : ""}
+
+問い：「${v[0]}」`
+  },
+
+  // ─── 上級・エージェント系 ─────────────────────────
+  {
+    cat: "🔴  上級・エージェント系",
+    en: "ReAct (Reasoning + Acting)",
+    kana: "リアクト",
+    tag: "t-adv", tagLabel: "上級",
+    desc: "「考える→動く→確認する」をループさせて問題を解かせる",
+    authorName: "Yao et al.",
+    authorKana: "ヤオ ら",
+    cite: "2023年 論文「ReAct: Synergizing Reasoning and Acting in Language Models」Princeton大学（プリンストン大学） & Google",
+    detail: "「推論（Reasoning）」と「行動（Acting）」を交互に繰り返させる手法で、「ReAct（リアクト）」という名前です。「考える→行動する→結果を見る→また考える」のループで複雑な問題を処理します。AIエージェントやツールを使う設計の業界標準になっています。",
+    ex: `【プロンプト例】
+以下の形式で思考と行動を交互に示しながら
+問題を解決してください。
+
+問題：「来月の講座の集客施策を決める」
+
+【思考】現状の課題は何か考える
+【行動】課題に対してできることを1つ実行する
+【観察】その結果や効果を確認する
+【思考】次に何をすべきか考える
+…このループを3回繰り返してください。
+
+━━━━━━━━━━━━━━━━━
+【ポイント】
+複雑な意思決定やエージェント設計で
+特に威力を発揮する手法。`,
+    tmplIntro: "解決したい問題を書いてください。「考える→動く→確認する」を繰り返しながら答えを出します。",
+    fields: [
+      { label: "解決したい問題・考えてほしいこと", note: "（自由に書いてOK）", type: "textarea", cls: "main-field", placeholder: "例：来月の講座の集客施策を決めたい。" },
+      { label: "ループを何回繰り返すか", note: "（省略すると3回）", type: "input", placeholder: "3" },
+    ],
+    build: (v) =>
+`以下の形式で【思考】と【行動】を交互に示しながら問題を解決してください。
+
+問題：「${v[0]}」
+
+【思考】現状の課題は何か考える
+【行動】課題に対してできることを1つ実行する
+【観察】その結果や効果を確認する
+【思考】次に何をすべきか考える
+
+…このループを${v[1] || "3"}回繰り返してください。`
+  },
+  {
+    en: "Reflexion",
+    kana: "リフレクション",
+    tag: "t-adv", tagLabel: "上級",
+    desc: "自分で採点して改善を繰り返させることで品質を上げる",
+    authorName: "Shinn et al.",
+    authorKana: "シン ら",
+    cite: "2023年 論文「Reflexion: Language Agents with Verbal Reinforcement Learning」Northeastern大学（ノースイースタン大学）",
+    detail: "AIに出力を自己採点させて、合格点に達するまで反省・改善を繰り返させる手法です。「出力→採点→反省→改善」のループで品質を段階的に高めます。一度のプロンプトで高品質な成果を引き出したいときに最適です。",
+    ex: `【プロンプト例】
+スマホ教室の紹介文（200字）を書いてください。
+
+書いた後に以下の基準で自己採点してください：
+・わかりやすさ（40点）
+・親しみやすさ（30点）
+・行動を促す力（30点）
+
+80点未満だった場合は反省点を述べてから
+改善版を出力してください。
+90点以上になるまで繰り返してください。
+
+━━━━━━━━━━━━━━━━━
+【ポイント】
+「自己採点→改善」のループで
+1つのプロンプトから高品質な成果を引き出す。`,
+    tmplIntro: "作ってほしいものと採点基準を決めてください。AIが自己採点しながら合格点まで改善します。",
+    fields: [
+      { label: "作ってほしいもの・内容", note: "（自由に書いてOK）", type: "textarea", cls: "main-field", placeholder: "例：スマホ教室の紹介文を200字で書いてください。" },
+      { label: "採点基準①　（例：わかりやすさ 40点）", note: "", type: "input", placeholder: "" },
+      { label: "採点基準②　（例：親しみやすさ 30点）", note: "", type: "input", placeholder: "" },
+      { label: "採点基準③　（例：行動を促す力 30点）", note: "", type: "input", placeholder: "" },
+      { label: "何点以上で合格にするか", note: "（省略すると90点）", type: "input", placeholder: "90" },
+    ],
+    build: (v) =>
+`${v[0]}
+
+作成後、以下の基準で自己採点してください：
+・${v[1]}
+・${v[2]}
+・${v[3]}
+
+${v[4] || "90"}点未満だった場合は反省点を述べてから改善版を出力してください。
+${v[4] || "90"}点以上になるまで繰り返してください。`
+  },
+  {
+    en: "Retrieval-Augmented Generation (RAG)",
+    kana: "リトリーバル・オーグメンテッド・ジェネレーション",
+    tag: "t-adv", tagLabel: "上級",
+    desc: "自分で用意した資料をAIに読ませて正確に答えてもらう",
+    authorName: "Lewis et al.",
+    authorKana: "ルイス ら",
+    cite: "2020年 論文「Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks」Meta AI（メタ エーアイ）",
+    detail: "外部の資料・データをプロンプトに貼り付けて（注入して）、その内容だけをもとに回答させる手法です。AIは学習した知識以外のことは知りませんが、資料を渡すことで「自分の教室の情報」「最新のお知らせ」など、AIが知らない内容についても正確に答えてくれます。企業向けAI実装の主流手法です。",
+    ex: `【プロンプト例】
+以下の参照資料のみを根拠として質問に答えてください。
+資料にない内容は「わかりません」と答えてください。
+
+【参照資料】
+受講料は月額3,000円。毎月第2・第4水曜日開催。
+会場は西都市民会館3F研修室。定員12名。
+お申し込みはLINEまたは電話にて受付中。
+
+【質問】
+「講座はいつ開催されていますか？」
+
+━━━━━━━━━━━━━━━━━
+【ポイント】
+資料を貼り付けてAIに読ませるのが簡易RAGの実践。
+精度と信頼性が大幅に上がる。`,
+    tmplIntro: "AIに読ませたい資料を貼り付けてから、質問を書いてください。資料にないことは「わかりません」と答えます。",
+    fields: [
+      { label: "参照させたい資料・テキスト", note: "（ここに貼り付けてください）", type: "textarea", cls: "main-field", placeholder: "例：受講料は月額3,000円。毎月第2・第4水曜日の13〜15時開催。\n会場は○○市民会館3F研修室。定員12名。\nお申し込みはLINEまたはお電話にて受付中。" },
+      { label: "AIへの質問", note: "（資料をもとに答えてほしいこと）", type: "textarea", placeholder: "例：講座はいつ、どこで開催されていますか？" },
+    ],
+    build: (v) =>
+`以下の参照資料のみを根拠として質問に答えてください。
+資料にない内容は「わかりません」と答えてください。
+
+【参照資料】
+${v[0]}
+
+【質問】
+「${v[1]}」`
+  },
+];
+
+function fallbackCopy(text, cb) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none;';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try { document.execCommand('copy'); cb(); } catch(e) { alert('コピーできませんでした。プレビュー欄のテキストを手動で選択してください。'); }
+  document.body.removeChild(ta);
+}
+
+const grid = document.getElementById('grid');
+let openPanel = null, openCard = null;
+
+cards.forEach((c, i) => {
+  if (c.cat) {
+    const lbl = document.createElement('div');
+    lbl.className = 'cat-label';
+    lbl.textContent = c.cat;
+    grid.appendChild(lbl);
+  }
+
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="num">${String(i + 1).padStart(2, '0')}</div>
+    <div class="en">${c.en}</div>
+    <div class="kana">${c.kana}</div>
+    <div class="desc">${c.desc}</div>
+    <span class="tag ${c.tag}">${c.tagLabel}</span>
+  `;
+
+  const fieldsHtml = c.fields.map((f, fi) => `
+    <div class="template-field">
+      <label>${f.label}${f.note ? `<span class="field-note">${f.note}</span>` : ''}</label>
+      ${f.type === 'textarea'
+        ? `<textarea data-fi="${fi}" class="${f.cls || ''}" placeholder="${f.placeholder}" rows="3"></textarea>`
+        : `<input type="text" data-fi="${fi}" placeholder="${f.placeholder}">`
+      }
+    </div>
+  `).join('');
+
+  const panel = document.createElement('div');
+  panel.className = 'panel';
+  panel.innerHTML = `
+    <div class="p-en">${c.en}</div>
+    <div class="p-kana">${c.kana}</div>
+
+    <div class="p-author">
+      <div class="p-author-icon">📄</div>
+      <div class="p-author-body">
+        <div class="p-author-label">提唱者・出典</div>
+        <div class="p-author-name">${c.authorName}</div>
+        <div class="p-author-cite">${c.cite}</div>
+      </div>
+    </div>
+
+    <div class="p-desc">${c.detail}</div>
+
+    <div class="p-section-ttl">実際のプロンプト例</div>
+    <div class="example">${c.ex}</div>
+
+    <div class="p-section-ttl">コピペ用テンプレート</div>
+    <div class="template-box">
+      <p class="tmpl-intro">${c.tmplIntro}</p>
+      ${fieldsHtml}
+      <div class="btn-row">
+        <button class="preview-btn" data-idx="${i}">👁 プロンプトを確認する</button>
+        <button class="copy-btn" data-idx="${i}">📋 コピー</button>
+      </div>
+      <div class="prompt-preview">
+        <div class="prompt-preview-label">生成されたプロンプト（確認してからコピーしてください）</div>
+        <div class="prompt-preview-text"></div>
+      </div>
+    </div>
+  `;
+
+  card.addEventListener('click', () => {
+    if (openPanel && openPanel !== panel) {
+      openPanel.classList.remove('show');
+      openCard.classList.remove('open');
+    }
+    if (panel.classList.contains('show')) {
+      panel.classList.remove('show');
+      card.classList.remove('open');
+      openPanel = null; openCard = null;
+    } else {
+      panel.classList.add('show');
+      card.classList.add('open');
+      openPanel = panel; openCard = card;
+      setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
+    }
+  });
+
+  function buildPrompt() {
+    const inputs = panel.querySelectorAll('input[data-fi], textarea[data-fi]');
+    const vals = Array.from(inputs).map(el => el.value.trim());
+    return c.build(vals);
+  }
+
+  function showPreview() {
+    const text = buildPrompt();
+    const preview = panel.querySelector('.prompt-preview');
+    const previewText = panel.querySelector('.prompt-preview-text');
+    previewText.textContent = text;
+    preview.classList.add('show');
+    setTimeout(() => preview.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
+    return text;
+  }
+
+  panel.querySelector('.preview-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    showPreview();
+  });
+
+  panel.querySelector('.copy-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const text = showPreview();
+    const btn = e.currentTarget;
+    function onCopied() {
+      btn.textContent = '✅ コピーしました！';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.innerHTML = '📋 コピー'; btn.classList.remove('copied'); }, 2500);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(onCopied).catch(() => fallbackCopy(text, onCopied));
+    } else {
+      fallbackCopy(text, onCopied);
+    }
+  });
+
+  grid.appendChild(card);
+  grid.appendChild(panel);
+});
+</script>
+</body>
+</html>
