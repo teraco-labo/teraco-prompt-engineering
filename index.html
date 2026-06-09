@@ -72,6 +72,17 @@ body {
   background: #fbfbfe;
 }
 .section.open .section-body { display: grid; }
+.subhead {
+  grid-column: 1 / -1;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #777;
+  letter-spacing: 0.06em;
+  padding: 4px 2px 7px;
+  margin-top: 6px;
+  border-bottom: 1px dashed #d8d8e4;
+}
+.subhead:first-child { margin-top: 0; }
 
 .card {
   background: #fff;
@@ -914,7 +925,7 @@ ${v[3] ? "雰囲気：" + v[3] + "。\n" : ""}
 
   // ─── AI講座 第1回：絵をかこう ──────────────────────
   {
-    cat: "AI講座・親子で作ろう（第1回：絵をかこう）", catColor: "#e8862e",
+    cat: "「親子で学ぶ」AI講座（小学生）", catColor: "#e8862e", subhead: "第1回：絵をかこう",
     en: "① ヒーローをかこう",
     kana: "自分だけのヒーローの絵を、AIに描いてもらおう",
     tag: "t-course", tagLabel: "AI講座",
@@ -950,7 +961,7 @@ ${v[1] ? "あと、" + v[1] + "を持たせてみて！" : ""}背景は真っ白
 
   // ─── AI講座 第2回：ゲームを作ろう ──────────────────
   {
-    cat: "AI講座・親子で作ろう（第2回：ゲームを作ろう）", catColor: "#1f9d8f",
+    subhead: "第2回：ゲームを作ろう",
     en: "① ゲームの土台づくり",
     kana: "ヒーローの画像を使って、動くゲームを作ろう",
     tag: "t-course", tagLabel: "AI講座",
@@ -1007,7 +1018,7 @@ ${v[1] ? "あと、" + v[1] + "を持たせてみて！" : ""}背景は真っ白
 
   // ─── AI講座 第3回：アプリを作ろう ──────────────────
   {
-    cat: "AI講座・親子で作ろう（第3回：アプリを作ろう）", catColor: "#d4569b",
+    subhead: "第3回：アプリを作ろう",
     en: "① まほうのごはんガチャ",
     kana: "ボタンを押すと今日の夕飯が決まる！ごはんガチャアプリ",
     tag: "t-course", tagLabel: "AI講座",
@@ -1424,6 +1435,13 @@ sections.forEach((sec) => {
 
   sec.items.forEach((c) => {
   const i = globalIndex++;
+
+  if (c.subhead) {
+    const sh = document.createElement('div');
+    sh.className = 'subhead';
+    sh.textContent = c.subhead;
+    body.appendChild(sh);
+  }
 
   const card = document.createElement('div');
   card.className = 'card';
