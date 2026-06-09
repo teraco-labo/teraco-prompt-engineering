@@ -881,10 +881,10 @@ ${v[3] ? "雰囲気：" + v[3] + "。\n" : ""}
     detail: "親子で【  】の中身を相談して決めよう！　下の入力欄を埋めて「コピー」を押すと、そのままAIに送れるプロンプトが完成します。AIにこの文章を送るだけで、本物のごはんガチャWebアプリが作れます。大好物（UR）が出たときの特別演出がポイントです。",
     tmplIntro: "親子でいっしょに、それぞれの欄を相談して決めて入力しよう！",
     fields: [
-      { label: "おうちの人の得意料理", note: "（例：肉じゃが）", type: "input", placeholder: "肉じゃが" },
-      { label: "ウルトラレア（UR・大好物）", note: "（例：ハンバーグ）", type: "input", placeholder: "ハンバーグ" },
-      { label: "レア（特別メニュー）", note: "（例：おたのしみ外食デー）", type: "input", placeholder: "おたのしみ外食デー" },
-      { label: "全体の背景の色", note: "（例：黄色）", type: "input", placeholder: "黄色" },
+      { label: "おうちの人の得意料理", note: "", type: "input", placeholder: "例：肉じゃが" },
+      { label: "ウルトラレア（UR・大好物）", note: "", type: "input", placeholder: "例：ハンバーグ" },
+      { label: "レア（特別メニュー）", note: "", type: "input", placeholder: "例：おたのしみ外食デー" },
+      { label: "全体の背景の色", note: "", type: "input", placeholder: "例：黄色" },
     ],
     build: (v) =>
 `ボタンを押すと今日の夕飯がランダムで決まる、楽しい「ごはんガチャ」のWebアプリを作ってください。
@@ -906,10 +906,10 @@ ${v[3] ? "雰囲気：" + v[3] + "。\n" : ""}
     detail: "親子で【  】の中身を相談して決めよう！　お手伝いの内容・目標ポイント・ごほうびを決めて入力すると、AIに送るプロンプトが完成します。目標ポイントが貯まるとクラッカーが鳴る演出つき。「何点でどんなごほうびにするか」を親子で相談するのが楽しいポイントです。",
     tmplIntro: "親子でいっしょに、お手伝いの内容とごほうびを相談して決めよう！",
     fields: [
-      { label: "やるお手伝いの内容", note: "（例：お皿洗いとお片付け）", type: "input", placeholder: "お皿洗いとお片付け" },
-      { label: "ごほうびがもらえる目標ポイント", note: "（例：10）", type: "input", placeholder: "10" },
-      { label: "貯まったらもらえるごほうび", note: "（例：週末におうち映画館）", type: "input", placeholder: "週末におうち映画館" },
-      { label: "全体の背景の色", note: "（例：みどり色）", type: "input", placeholder: "みどり色" },
+      { label: "やるお手伝いの内容", note: "", type: "input", placeholder: "例：お皿洗いとお片付け" },
+      { label: "ごほうびがもらえる目標ポイント", note: "", type: "input", placeholder: "例：10" },
+      { label: "貯まったらもらえるごほうび", note: "", type: "input", placeholder: "例：週末におうち映画館" },
+      { label: "全体の背景の色", note: "", type: "input", placeholder: "例：みどり色" },
     ],
     build: (v) =>
 `お手伝いをしてポイントを貯める、楽しい「デジタルポイントカード」のWebアプリを作ってください。
@@ -931,11 +931,11 @@ ${v[3] ? "雰囲気：" + v[3] + "。\n" : ""}
     detail: "親子で【  】の中身を相談して決めよう！　好きなキャラクターと、3つの応援メッセージを考えて入力すると、AIに送るプロンプトが完成します。どんなセリフだとやる気が出るか、親子で考えるのが楽しいポイント。星が飛び散る元気な演出つきです。",
     tmplIntro: "親子でいっしょに、キャラクターと応援メッセージ3つを考えよう！",
     fields: [
-      { label: "真ん中に表示するキャラクター", note: "（例：かわいいペンギン）", type: "input", placeholder: "かわいいペンギン" },
-      { label: "応援メッセージ その1", note: "（例：きみなら一瞬で終わるよ！がんばれ！）", type: "input", placeholder: "きみなら一瞬で終わるよ！がんばれ！" },
-      { label: "応援メッセージ その2", note: "（例：天才の集中力を見せておくれ！）", type: "input", placeholder: "天才の集中力を見せておくれ！" },
-      { label: "応援メッセージ その3", note: "（例：終わったら美味しいおやつがあるよ！）", type: "input", placeholder: "終わったら美味しいおやつがあるよ！" },
-      { label: "全体の背景の色", note: "（例：水色）", type: "input", placeholder: "水色" },
+      { label: "真ん中に表示するキャラクター", note: "", type: "input", placeholder: "例：かわいいペンギン" },
+      { label: "応援メッセージ その1", note: "", type: "input", placeholder: "例：きみなら一瞬で終わるよ！がんばれ！" },
+      { label: "応援メッセージ その2", note: "", type: "input", placeholder: "例：天才の集中力を見せておくれ！" },
+      { label: "応援メッセージ その3", note: "", type: "input", placeholder: "例：終わったら美味しいおやつがあるよ！" },
+      { label: "全体の背景の色", note: "", type: "input", placeholder: "例：水色" },
     ],
     build: (v) =>
 `ボタンを押すと、キャラクターがやる気の出るメッセージをランダムで言ってくれる「宿題応援ボタン」のWebアプリを作ってください。
@@ -959,8 +959,8 @@ ${v[3] ? "雰囲気：" + v[3] + "。\n" : ""}
     detail: "親子で【  】の中身を相談して決めよう！　おやつの種類と色を入力すると、AIに送るプロンプトが完成します。人数を入れると「1人何個ずつ」「あまり何個」を計算してくれるアプリが作れます。あまりが出たときの優しいメッセージがポイントです。",
     tmplIntro: "親子でいっしょに、分けたいおやつと色を決めよう！",
     fields: [
-      { label: "分けたいおやつの種類", note: "（例：クッキーやチョコ）", type: "input", placeholder: "クッキーやチョコ" },
-      { label: "全体の背景の色", note: "（例：オレンジ色）", type: "input", placeholder: "オレンジ色" },
+      { label: "分けたいおやつの種類", note: "", type: "input", placeholder: "例：クッキーやチョコ" },
+      { label: "全体の背景の色", note: "", type: "input", placeholder: "例：オレンジ色" },
     ],
     build: (v) =>
 `おやつをケンカせずにきれいに分けるための「おやつ半分こ計算機」のWebアプリを作ってください。
