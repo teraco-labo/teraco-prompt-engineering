@@ -19,19 +19,59 @@ body {
 .header .sub { font-size: 0.75rem; color: #888; margin-top: 5px; }
 .header .hint { font-size: 0.72rem; color: #aaa; margin-top: 3px; }
 
-.cat-label {
-  grid-column: 1 / -1;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #888;
-  padding: 10px 0 6px;
-  border-bottom: 2px solid #e8e8f0;
-  margin-bottom: 4px;
+/* ── Accordion ── */
+.grid { max-width: 900px; margin: 0 auto; }
+.section { margin-bottom: 12px; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  background: #fff;
+  border: 1.5px solid #e8e8f0;
+  border-radius: 12px;
+  padding: 15px 18px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 }
-
-.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 900px; margin: 0 auto; }
+.section-header:hover { border-color: #cfcde8; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+.section.open .section-header { background: #fafafe; border-color: #d6d2f5; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.section-dot {
+  width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+}
+.section-title {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #2a2a40;
+  letter-spacing: 0.02em;
+}
+.section-count {
+  font-size: 0.68rem;
+  color: #aaa;
+  font-weight: 600;
+  margin-right: 2px;
+}
+.chevron {
+  font-size: 0.75rem;
+  color: #b0b0c8;
+  transition: transform 0.2s;
+}
+.section.open .chevron { transform: rotate(90deg); }
+.section-body {
+  display: none;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  padding: 14px;
+  border: 1.5px solid #e8e8f0;
+  border-top: none;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  background: #fbfbfe;
+}
+.section.open .section-body { display: grid; }
 
 .card {
   background: #fff;
@@ -153,14 +193,14 @@ body {
   font-family: 'Menlo', 'Courier New', monospace;
 }
 
-@media (max-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 400px) { .grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .section.open .section-body { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 400px) { .section.open .section-body { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>🧠 Prompt Engineering Template<br><span style="font-size:0.75rem;color:#888;font-weight:600;letter-spacing:0;">プロンプトエンジニアリングテンプレート</span></h1>
+  <h1>Prompt Engineering Template<br><span style="font-size:0.75rem;color:#888;font-weight:600;letter-spacing:0;">プロンプトエンジニアリングテンプレート</span></h1>
   <p class="sub">論文・業界標準で定義された正式名称のみ掲載</p>
   <p class="hint">カードをクリックすると解説・提唱者・テンプレートが表示されます</p>
 </div>
@@ -171,7 +211,7 @@ body {
 const cards = [
   // ─── 基本系 ───────────────────────────────────────
   {
-    cat: "🟢  基本系",
+    cat: "基本系", catColor: "#27ae60",
     en: "Zero-Shot Prompting",
     kana: "ゼロショット・プロンプティング",
     tag: "t-basic", tagLabel: "基本",
@@ -277,7 +317,7 @@ ${v[1]}${v[2] ? "\n\n回答は" + v[2] + "でお願いします。" : ""}`
 
   // ─── 推論強化系 ──────────────────────────────────
   {
-    cat: "🔵  推論強化系",
+    cat: "推論強化系", catColor: "#3a7bd5",
     en: "Chain-of-Thought Prompting (CoT)",
     kana: "チェーン・オブ・ソート・プロンプティング",
     tag: "t-reason", tagLabel: "推論強化",
@@ -397,7 +437,7 @@ ${v[1]}${v[2] ? "\n\n回答は" + v[2] + "でお願いします。" : ""}`
 
   // ─── 構造・設計系 ────────────────────────────────
   {
-    cat: "🟡  構造・設計系",
+    cat: "構造・設計系", catColor: "#e0a800",
     en: "Prompt Chaining",
     kana: "プロンプト・チェイニング",
     tag: "t-struct", tagLabel: "構造設計",
@@ -635,7 +675,7 @@ ${v[1]}${v[2] ? "\n\n避けてほしい表現：" + v[2] : ""}`
 
   // ─── 上級・エージェント系 ─────────────────────────
   {
-    cat: "🔴  上級・エージェント系",
+    cat: "上級・エージェント系", catColor: "#e05c6f",
     en: "ReAct (Reasoning + Acting)",
     kana: "リアクト",
     tag: "t-adv", tagLabel: "上級",
@@ -765,7 +805,7 @@ ${v[0]}
 
   // ─── 画像生成系 ────────────────────────────────────
   {
-    cat: "🟣  画像生成系",
+    cat: "画像生成系", catColor: "#a63dc7",
     en: "Photorealistic Prompting",
     kana: "フォトリアリスティック・プロンプティング（写真風）",
     tag: "t-image", tagLabel: "画像生成",
@@ -873,7 +913,7 @@ ${v[3] ? "雰囲気：" + v[3] + "。\n" : ""}
 
   // ─── AI講座 第1回：絵をかこう ──────────────────────
   {
-    cat: "🎨  AI講座・親子で作ろう（第1回：絵をかこう）",
+    cat: "AI講座・親子で作ろう（第1回：絵をかこう）", catColor: "#e8862e",
     en: "① ヒーローをかこう",
     kana: "自分だけのヒーローの絵を、AIに描いてもらおう",
     tag: "t-course", tagLabel: "AI講座",
@@ -909,7 +949,7 @@ ${v[1] ? "あと、" + v[1] + "を持たせてみて！" : ""}背景は真っ白
 
   // ─── AI講座 第2回：ゲームを作ろう ──────────────────
   {
-    cat: "🎮  AI講座・親子で作ろう（第2回：ゲームを作ろう）",
+    cat: "AI講座・親子で作ろう（第2回：ゲームを作ろう）", catColor: "#1f9d8f",
     en: "① ゲームの土台づくり",
     kana: "ヒーローの画像を使って、動くゲームを作ろう",
     tag: "t-course", tagLabel: "AI講座",
@@ -966,7 +1006,7 @@ ${v[1] ? "あと、" + v[1] + "を持たせてみて！" : ""}背景は真っ白
 
   // ─── AI講座 第3回：アプリを作ろう ──────────────────
   {
-    cat: "📱  AI講座・親子で作ろう（第3回：アプリを作ろう）",
+    cat: "AI講座・親子で作ろう（第3回：アプリを作ろう）", catColor: "#d4569b",
     en: "① まほうのごはんガチャ",
     kana: "ボタンを押すと今日の夕飯が決まる！ごはんガチャアプリ",
     tag: "t-course", tagLabel: "AI講座",
@@ -1084,13 +1124,36 @@ function fallbackCopy(text, cb) {
 const grid = document.getElementById('grid');
 let openPanel = null, openCard = null;
 
-cards.forEach((c, i) => {
-  if (c.cat) {
-    const lbl = document.createElement('div');
-    lbl.className = 'cat-label';
-    lbl.textContent = c.cat;
-    grid.appendChild(lbl);
-  }
+// カードをセクションごとにまとめる
+const sections = [];
+cards.forEach((c) => {
+  if (c.cat) sections.push({ cat: c.cat, color: c.catColor || '#888', items: [] });
+  sections[sections.length - 1].items.push(c);
+});
+
+let globalIndex = 0;
+sections.forEach((sec) => {
+  const section = document.createElement('div');
+  section.className = 'section';
+
+  const header = document.createElement('button');
+  header.className = 'section-header';
+  header.innerHTML =
+    '<span class="section-dot" style="background:' + sec.color + '"></span>' +
+    '<span class="section-title">' + sec.cat + '</span>' +
+    '<span class="section-count">' + sec.items.length + '</span>' +
+    '<span class="chevron">▶</span>';
+
+  const body = document.createElement('div');
+  body.className = 'section-body';
+
+  header.addEventListener('click', () => section.classList.toggle('open'));
+  section.appendChild(header);
+  section.appendChild(body);
+  grid.appendChild(section);
+
+  sec.items.forEach((c) => {
+  const i = globalIndex++;
 
   const card = document.createElement('div');
   card.className = 'card';
@@ -1203,8 +1266,9 @@ cards.forEach((c, i) => {
     }
   });
 
-  grid.appendChild(card);
-  grid.appendChild(panel);
+  body.appendChild(card);
+  body.appendChild(panel);
+  });
 });
 </script>
 </body>
