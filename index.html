@@ -1551,8 +1551,8 @@ sections.forEach((sec) => {
     <div class="template-field">
       <label>${f.label}${f.note ? `<span class="field-note">${f.note}</span>` : ''}</label>
       ${f.type === 'textarea'
-        ? `<textarea data-fi="${fi}" class="${f.cls || ''}" placeholder="${f.placeholder}" rows="3"></textarea>`
-        : `<input type="text" data-fi="${fi}" placeholder="${f.placeholder}">`
+        ? `<textarea data-fi="${fi}" class="${f.cls || ''}" placeholder="${f.placeholder}" rows="3" autocomplete="off"></textarea>`
+        : `<input type="text" data-fi="${fi}" placeholder="${f.placeholder}" autocomplete="off">`
       }
     </div>
   `).join('');
@@ -1651,6 +1651,12 @@ sections.forEach((sec) => {
   body.appendChild(card);
   body.appendChild(panel);
   });
+});
+
+// ページを開く（または戻る/進むで再表示する）たびに、入力欄を必ず空にする。
+// ブラウザが前回入力した値を勝手に復元して「テキストが入ったように見える」のを防ぐ。
+window.addEventListener('pageshow', () => {
+  document.querySelectorAll('[data-fi]').forEach((el) => { el.value = ''; });
 });
 </script>
 </body>
