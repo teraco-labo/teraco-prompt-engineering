@@ -21,6 +21,16 @@ body {
 
 /* ── Accordion ── */
 .grid { max-width: 900px; margin: 0 auto; }
+.group-label {
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: #2a2a40;
+  letter-spacing: 0.06em;
+  margin: 30px 0 13px;
+  padding: 3px 0 3px 13px;
+  border-left: 5px solid #888;
+}
+.group-label:first-child { margin-top: 6px; }
 .section { margin-bottom: 12px; }
 .section-header {
   display: flex;
@@ -214,7 +224,6 @@ body {
 
 <div class="header">
   <h1>Prompt Engineering Template<br><span style="font-size:0.75rem;color:#888;font-weight:600;letter-spacing:0;">プロンプトエンジニアリングテンプレート</span></h1>
-  <p class="sub">論文・業界標準で定義された正式名称のみ掲載</p>
   <p class="hint">カードをクリックすると解説・提唱者・テンプレートが表示されます</p>
 </div>
 
@@ -224,6 +233,7 @@ body {
 const cards = [
   // ─── 基本系 ───────────────────────────────────────
   {
+    group: "業界標準", groupColor: "#3a7bd5",
     cat: "基本系", catColor: "#27ae60",
     en: "Zero-Shot Prompting",
     kana: "ゼロショット・プロンプティング",
@@ -330,7 +340,7 @@ ${v[1]}${v[2] ? "\n\n回答は" + v[2] + "でお願いします。" : ""}`
 
   // ─── 推論強化系 ──────────────────────────────────
   {
-    cat: "推論強化系", catColor: "#3a7bd5",
+    cat: "推論系", catColor: "#3a7bd5",
     en: "Chain-of-Thought Prompting (CoT)",
     kana: "チェーン・オブ・ソート・プロンプティング",
     tag: "t-reason", tagLabel: "推論強化",
@@ -450,7 +460,7 @@ ${v[1]}${v[2] ? "\n\n回答は" + v[2] + "でお願いします。" : ""}`
 
   // ─── 構造・設計系 ────────────────────────────────
   {
-    cat: "構造・設計系", catColor: "#e0a800",
+    cat: "構造系", catColor: "#e0a800",
     en: "Prompt Chaining",
     kana: "プロンプト・チェイニング",
     tag: "t-struct", tagLabel: "構造設計",
@@ -688,7 +698,7 @@ ${v[1]}${v[2] ? "\n\n避けてほしい表現：" + v[2] : ""}`
 
   // ─── 上級・エージェント系 ─────────────────────────
   {
-    cat: "上級・エージェント系", catColor: "#e05c6f",
+    cat: "エージェント系", catColor: "#e05c6f",
     en: "ReAct (Reasoning + Acting)",
     kana: "リアクト",
     tag: "t-adv", tagLabel: "上級",
@@ -818,6 +828,7 @@ ${v[0]}
 
   // ─── 画像生成系 ────────────────────────────────────
   {
+    group: "てらこ式", groupColor: "#e8862e",
     cat: "画像生成系", catColor: "#a63dc7",
     en: "Photorealistic Prompting",
     kana: "フォトリアリスティック・プロンプティング（写真風）",
@@ -1502,12 +1513,20 @@ let openPanel = null, openCard = null;
 // カードをセクションごとにまとめる
 const sections = [];
 cards.forEach((c) => {
-  if (c.cat) sections.push({ cat: c.cat, color: c.catColor || '#888', items: [] });
+  if (c.cat) sections.push({ cat: c.cat, color: c.catColor || '#888', group: c.group || null, groupColor: c.groupColor || '#888', items: [] });
   sections[sections.length - 1].items.push(c);
 });
 
 let globalIndex = 0;
 sections.forEach((sec) => {
+  if (sec.group) {
+    const gl = document.createElement('div');
+    gl.className = 'group-label';
+    gl.textContent = sec.group;
+    gl.style.borderLeftColor = sec.groupColor;
+    grid.appendChild(gl);
+  }
+
   const section = document.createElement('div');
   section.className = 'section';
 
