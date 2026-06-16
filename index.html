@@ -132,16 +132,18 @@ body {
 .panel.show { display: block; }
 @keyframes fadeIn { from { opacity:0; transform: translateY(-6px); } to { opacity:1; transform: translateY(0); } }
 
-.reset-btn {
-  position: absolute; top: 18px; right: 20px;
-  background: #f1eff8; color: #8a8aa0;
-  border: 1px solid #ddd9ec; border-radius: 8px;
-  padding: 6px 13px; font-size: 0.68rem; font-weight: 700;
+.helper-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.example-btn, .clear-btn {
+  background: #f1eff8; color: #6c63ff;
+  border: 1px solid #ddd9ec; border-radius: 7px;
+  padding: 6px 13px; font-size: 0.69rem; font-weight: 700;
   cursor: pointer; font-family: inherit; transition: background 0.15s, color 0.15s;
 }
-.reset-btn:hover { background: #e7e3f5; color: #6c63ff; }
+.example-btn:hover { background: #e3dffa; }
+.clear-btn { color: #8a8aa0; }
+.clear-btn:hover { background: #ececf2; color: #666; }
 
-.p-en   { font-size: 1.1rem; font-weight: 800; color: #1a1a2e; padding-right: 76px; }
+.p-en   { font-size: 1.1rem; font-weight: 800; color: #1a1a2e; }
 .p-kana { font-size: 0.72rem; color: #aaa; margin: 3px 0 14px; }
 
 /* 提唱者バッジ */
@@ -1774,7 +1776,6 @@ sections.forEach((sec) => {
     <div class="example">${c.ex}</div>` : '';
 
   panel.innerHTML = `
-    <button class="reset-btn">↺ リセット</button>
     <div class="p-en">${c.en}</div>
     <div class="p-kana">${c.kana}</div>
     ${authorHtml}
@@ -1783,6 +1784,10 @@ sections.forEach((sec) => {
     <div class="p-section-ttl">コピペ用テンプレート</div>
     <div class="template-box">
       <p class="tmpl-intro">${c.tmplIntro}</p>
+      <div class="helper-row">
+        <button class="example-btn">✏️ 例を入れてみる</button>
+        <button class="clear-btn">🧹 ぜんぶ消す</button>
+      </div>
       ${fieldsHtml}
       <div class="btn-row">
         <button class="preview-btn" data-idx="${i}">👁 プロンプトを確認する</button>
@@ -1849,7 +1854,17 @@ sections.forEach((sec) => {
     }
   });
 
-  panel.querySelector('.reset-btn').addEventListener('click', (e) => {
+  // 例を入れてみる：placeholderの「例：◯◯」を実際の値として入力
+  panel.querySelector('.example-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    panel.querySelectorAll('input[data-fi], textarea[data-fi]').forEach((el) => {
+      const ph = el.getAttribute('placeholder') || '';
+      if (/^例[：:]/.test(ph)) el.value = ph.replace(/^例[：:]\s*/, '');
+    });
+  });
+
+  // ぜんぶ消す：全部の入力欄を空にしてプレビューも消す
+  panel.querySelector('.clear-btn').addEventListener('click', (e) => {
     e.stopPropagation();
     panel.querySelectorAll('input[data-fi], textarea[data-fi]').forEach((el) => { el.value = ''; });
     const preview = panel.querySelector('.prompt-preview');
