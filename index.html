@@ -171,6 +171,18 @@ body {
   font-family: 'Menlo', 'Courier New', monospace; margin-bottom: 24px;
 }
 
+/* コピー専用カード（完成プロンプト型） */
+.steps { margin: 0 0 20px 1.2em; padding: 0; }
+.steps li { font-size: 0.76rem; color: #333; line-height: 1.7; margin-bottom: 4px; }
+.hints { margin: 0 0 18px 1.2em; padding: 0; }
+.hints li { font-size: 0.74rem; color: #555; line-height: 1.7; margin-bottom: 4px; }
+.fixed-copy { margin-bottom: 22px; }
+.safety-note {
+  font-size: 0.68rem; color: #b06b6b; line-height: 1.65;
+  background: #fdf3f3; border: 1px solid #f2dede; border-radius: 8px;
+  padding: 10px 13px; margin-top: 4px;
+}
+
 /* テンプレート */
 .template-box {
   background: #fafafe; border: 1.5px solid #e0deff;
@@ -1434,6 +1446,158 @@ ${v[5] ? "\n【世界観・背景の雰囲気】\n" + v[5] + "\n" : ""}
 ・アニメ・イラスト風、キャラクター設定画のような仕上がり`
   },
 
+  // ─── AI講座（中学生）AIとの上手な話し方（コピー専用）───
+  {
+    subhead: "AIとの上手な話し方を知ろう（会話で体験）",
+    en: "① AIキャラ変トーク",
+    kana: "話し方を変えると、AIの答えが変わる（講師と体験・約7分）",
+    tag: "t-course", tagLabel: "AI講座",
+    desc: "同じ質問でも、役割や話し方を指定するとAIの表現が変わることを体験する",
+    fixedPrompt: true,
+    detail: "このプロンプトをまるごとコピーしてAIに貼り付けると、話し方メニューと質問メニューが出ます。番号で選ぶだけで、選んだ話し方でAIが答えてくれます。同じ質問でも「武士風」と「ギャル風」で答え方がどう変わるか比べてみよう。",
+    steps: ["プロンプトをコピーしてAIに貼り付ける", "話し方を番号で選ぶ → 質問を番号で選ぶ", "答えを確認し、音声会話で続きを話してみる"],
+    prompt: `あなたは「AIキャラ変トーク」の会話相手です。
+
+最初に、次の話し方メニューだけを表示してください。
+
+1：武士風
+2：明るいギャル風
+3：丁寧な執事風
+4：熱血コーチ風
+5：未来のロボット風
+
+私が番号を選んだら、次の質問メニューだけを表示してください。
+
+1：朝、時間どおりに起きるコツ
+2：宿題を始めるための最初の一歩
+3：雨の日の放課後の過ごし方
+4：友達への誕生日メッセージ
+5：自分で質問する
+
+5が選ばれた場合は、
+「聞きたいことを一つ入力してください」
+と聞いてください。
+
+質問が決まったら、選ばれた話し方で回答してください。
+
+ルール：
+・回答は3文以内にする
+・中学生にも分かる言葉を使う
+・安全で実行しやすい内容にする
+・実在する人物のものまねはしない
+・相手を傷つける表現は使わない
+・回答の最後に、会話を続ける短い質問を一つだけする
+・その後も選ばれた話し方を維持する
+・一度に一つの段階だけ進める
+・選択肢以外が入力されたら、選択肢をもう一度表示する
+・「やりなおす」で最初のメニューに戻る
+・「おわり」で終了する
+
+それでは始めてください。`,
+    hints: ["回答を1文にする", "「やさしい先生風」を追加する", "最後に質問をしないようにする", "質問メニューを学校生活向けに変更する"],
+  },
+  {
+    en: "② 10問AI探偵",
+    kana: "会話のルールもプロンプトで決められる（1人で体験・約10分）",
+    tag: "t-course", tagLabel: "AI講座",
+    desc: "質問数・順番・答え方など、AIとの会話ルールもプロンプトで決められることを体験する",
+    fixedPrompt: true,
+    detail: "このプロンプトをコピーして貼り付けると、AIが「10問以内であなたが思い浮かべたものを当てる探偵」になります。質問数や答え方のルールをこちらで決められることを体験しよう。答えは頭の中だけで決めて、入力しないのがポイント。",
+    steps: ["プロンプトをコピーして貼り付ける", "テーマを番号で選び、答えを頭の中だけで決める", "STARTと入力し、質問に数字で答える"],
+    prompt: `あなたは「10問AI探偵」です。
+
+最初に、次のテーマメニューだけを表示してください。
+
+1：学校にあるもの
+2：食べ物・飲み物
+3：動物
+4：乗り物
+
+私がテーマを選んだら、
+「答えを頭の中で一つ決めてください。
+答えは入力しないでください。
+決まったらSTARTと入力してください」
+と表示してください。
+
+STARTと入力されたら、Q1から質問を始めてください。
+
+ルール：
+・最大10問で答えを推理する
+・質問は一度に1問だけ出す
+・私が答えるまで次へ進まない
+・毎回、次の回答方法を表示する
+
+1：はい
+2：いいえ
+3：わからない・どちらともいえない
+
+・私の回答を使って次の質問を考える
+・同じ内容を繰り返し質問しない
+・推理も1問として数える
+・答えが分かったら
+「私の推理は〇〇です。1：正解　2：違う」
+と聞く
+・正解したら、何問で当てたか表示する
+・推理が外れたら、残りの質問を続ける
+・10問で分からなければ正解を聞く
+・一度に複数の質問を出さない
+・「やりなおす」で同じテーマを再開する
+・「テーマ変更」で最初のメニューに戻る
+・「おわり」で終了する
+
+それでは始めてください。`,
+    hints: ["最大10問を5問にする", "テーマを「スポーツ」へ変更する", "探偵風の話し方を追加する", "最後に推理の理由を説明させる"],
+  },
+  {
+    en: "③ AI絵文字暗号メーカー",
+    kana: "出力の形や難易度も指定できる（2人で体験・約10分）",
+    tag: "t-course", tagLabel: "AI講座",
+    desc: "AIに文章を絵文字暗号へ変換させ、出力形式や難易度も指定できることを体験する",
+    fixedPrompt: true,
+    detail: "このプロンプトをコピーして貼り付けると、AIが文章を絵文字だけの暗号に変換します。出力の形（絵文字だけ）や難易度も指定できることを体験しよう。できた暗号を隣の人に見せて、解けるか試すペアワークです。",
+    steps: ["プロンプトをコピーして貼り付ける", "文章と難易度を番号で選ぶ", "できた暗号を隣の人に見せ、答えをAIに入力して判定する"],
+    prompt: `あなたは「AI絵文字暗号メーカー」です。
+
+最初に、次の文章メニューだけを表示してください。
+
+1：今日の給食はカレーです。
+2：放課後、友達と図書館へ行きます。
+3：明日は雨なので、傘を忘れないでください。
+4：自分で文章を作る
+
+1から3が選ばれたら、その文章を正解として記憶してください。
+
+4が選ばれたら、
+「暗号にしたい短い文章を入力してください」
+と聞いてください。
+
+文章が決まったら、次の難易度メニューだけを表示してください。
+
+1：かんたん
+2：ふつう
+3：むずかしい
+
+難易度が選ばれたら、文章を絵文字暗号に変換してください。
+
+ルール：
+・暗号部分には絵文字だけを使う
+・絵文字は最大8個にする
+・最初は元の文章を表示しない
+・暗号の下に「相手の答えを入力してください」と表示する
+・答えが入力されたら、正解か判定する
+・意味がほぼ同じなら正解にする
+・1回目の間違いでは、正解を出さず短いヒントを一つ出す
+・2回目も間違えたら正解を表示する
+・正解したら元の文章を表示する
+・一度に一つの段階だけ進める
+・「もう一問」で文章メニューに戻る
+・「やりなおす」で同じ文章を作り直す
+・「おわり」で終了する
+
+それでは始めてください。`,
+    hints: ["絵文字を5個以内にする", "ヒントを出さない", "テーマを学校生活だけにする", "3回間違えるまで正解を表示しない"],
+  },
+
   // ─── AI講座（高校生）第5回：AI嘘つき選手権 ──────────
   {
     cat: "AI講座（高校生）", catColor: "#c2783c",
@@ -2077,6 +2241,58 @@ sections.forEach((sec) => {
         card.classList.add('open');
         openPanel = panel; openCard = card;
         setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
+      }
+    });
+    body.appendChild(card);
+    body.appendChild(panel);
+    return;
+  }
+
+  // 完成プロンプト型（コピー専用）カード：入力欄なし、丸ごとコピー
+  if (c.fixedPrompt) {
+    const panel = document.createElement('div');
+    panel.className = 'panel';
+    const stepsHtml = (c.steps || []).map((s) => `<li>${s}</li>`).join('');
+    const hintsHtml = (c.hints || []).map((h) => `<li>${h}</li>`).join('');
+    panel.innerHTML = `
+      <div class="p-en">${c.en}</div>
+      <div class="p-kana">${c.kana}</div>
+      <div class="p-desc">${c.detail}</div>
+      ${stepsHtml ? `<div class="p-section-ttl">使い方</div><ol class="steps">${stepsHtml}</ol>` : ''}
+      <div class="p-section-ttl">完成プロンプト（このままコピーして使う）</div>
+      <div class="example">${c.prompt}</div>
+      <button class="copy-btn fixed-copy">📋 プロンプトをコピー</button>
+      ${hintsHtml ? `<div class="p-section-ttl">改造のヒント</div><ul class="hints">${hintsHtml}</ul>` : ''}
+      <p class="safety-note">名前・住所・学校名・電話番号などの個人情報は入力しないでください。AIの回答は正しいとは限りません。大切な内容は人間が確認してください。</p>
+    `;
+    card.addEventListener('click', () => {
+      if (openPanel && openPanel !== panel) {
+        openPanel.classList.remove('show');
+        openCard.classList.remove('open');
+      }
+      if (panel.classList.contains('show')) {
+        panel.classList.remove('show');
+        card.classList.remove('open');
+        openPanel = null; openCard = null;
+      } else {
+        panel.classList.add('show');
+        card.classList.add('open');
+        openPanel = panel; openCard = card;
+        setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
+      }
+    });
+    panel.querySelector('.copy-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const btn = e.currentTarget;
+      function onCopied() {
+        btn.textContent = '✅ コピーしました！';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.innerHTML = '📋 プロンプトをコピー'; btn.classList.remove('copied'); }, 2500);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(c.prompt).then(onCopied).catch(() => fallbackCopy(c.prompt, onCopied));
+      } else {
+        fallbackCopy(c.prompt, onCopied);
       }
     });
     body.appendChild(card);
