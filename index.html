@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
 <title>Prompt Engineering Techniques — TERACO</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1544,6 +1545,57 @@ ${v[2]}
 - 歌詞の繰り返し部分が印象に残るように作る`
   },
 
+  // ─── AI講座（中学生）第4回：動画生成 ────────────────
+  {
+    subhead: "第4回：動画生成AIでショートムービーをつくろう",
+    anchor: "middle-video",
+    en: "① 1カットの設計シート",
+    kana: "主役・動き・場所・カメラ・時間を、1つの文にする",
+    tag: "t-course", tagLabel: "AI講座",
+    desc: "5つの条件だけを決めて、短い動画のプロンプトを作る",
+    detail: "短い動画は、主役と主な動きを一つずつに絞ると伝わりやすくなります。主役・動き・場所・カメラ・時間の5項目を埋めると、動画生成AIへそのまま渡せる1文になります。",
+    tmplIntro: "5つの欄を埋めてね。主役と動きは一つずつにします。",
+    fields: [
+      { label: "主役", note: "（一つ）", type: "input", placeholder: "例：紙のロケット" },
+      { label: "動き", note: "（一つ）", type: "input", placeholder: "例：ゆっくり浮かぶ" },
+      { label: "場所", note: "", type: "input", placeholder: "例：明るい体育館" },
+      { label: "カメラ", note: "", type: "select", options: ["固定する", "少し近づく", "横へ動く", "上から見る"], default: "少し近づく" },
+      { label: "時間", note: "", type: "select", options: ["3秒くらい", "5秒くらい", "8秒くらい"], default: "5秒くらい" },
+    ],
+    build: (v) =>
+`${v[2] || "［場所］"}で、${v[0] || "［主役］"}が${v[1] || "［動き］"}。カメラは${v[3] || "［カメラ］"}。${v[4] || "［時間］"}の短い動画。`
+  },
+  {
+    en: "② 最初の動画をつくる",
+    kana: "ワーク1で作った1文を、そのまま使う",
+    tag: "t-course", tagLabel: "AI講座",
+    desc: "設計文を増やさず、動画生成AIへ入力する形に整える",
+    detail: "ワーク1で完成した1文を、そのまま動画生成AIへ渡します。この段階では条件を増やしたり書き直したりせず、最初の結果を一度作って最後まで見ます。",
+    tmplIntro: "ワーク1で作った1文を貼って、コピーしてください。文章は増やしません。",
+    fields: [
+      { label: "ワーク1で作った1文", note: "", type: "textarea", cls: "main-field", placeholder: "例：明るい体育館で、紙のロケットがゆっくり浮かぶ。カメラは少し近づく。5秒くらいの短い動画。" },
+    ],
+    build: (v) => v[0] || "［ワーク1で作った1文］"
+  },
+  {
+    en: "③ 条件を1つだけ変える",
+    kana: "元の文から、一つの言葉だけを書き換える",
+    tag: "t-course", tagLabel: "AI講座",
+    desc: "変更前と変更後を比べられる、2本目のプロンプトを作る",
+    detail: "動き・カメラ・時間・雰囲気から一つだけ選び、元のプロンプトにある言葉を一か所だけ書き換えます。他の条件を残すことで、どの言葉が動画の変化につながったか比べやすくなります。",
+    tmplIntro: "元の文を貼り、変える条件と、変更前・変更後の言葉を一つずつ入力してね。",
+    fields: [
+      { label: "変更前のプロンプト", note: "（ワーク2で使った文）", type: "textarea", cls: "main-field", placeholder: "例：明るい体育館で、紙のロケットがゆっくり浮かぶ。カメラは少し近づく。5秒くらいの短い動画。" },
+      { label: "変える条件", note: "（一つ）", type: "select", options: ["動き", "カメラ", "時間", "雰囲気"], default: "動き" },
+      { label: "変更前の言葉", note: "（元の文と同じ言葉）", type: "input", placeholder: "例：ゆっくり浮かぶ" },
+      { label: "変更後の言葉", note: "", type: "input", placeholder: "例：勢いよく飛び上がる" },
+    ],
+    build: (v) => {
+      const original = v[0] || "［ワーク2で使ったプロンプト］";
+      return v[2] && v[3] ? original.replace(v[2], v[3]) : original;
+    }
+  },
+
   // ─── AI講座（高校生）第6回：未来の仕事とAI ──────────
   {
     cat: "AI講座（高校生）", catColor: "#c2783c", slug: "high",
@@ -1991,6 +2043,7 @@ sections.forEach((sec) => {
   if (c.subhead) {
     const sh = document.createElement('div');
     sh.className = 'subhead';
+    if (c.anchor) sh.id = 'anchor-' + c.anchor;
     sh.textContent = c.subhead;
     body.appendChild(sh);
   }
@@ -2228,9 +2281,16 @@ function openSectionFromHash() {
   const slug = window.location.hash.replace('#', '');
   if (!slug) return;
   const target = document.getElementById('section-' + slug);
-  if (!target) return;
-  target.classList.add('open');
-  setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+  if (target) {
+    target.classList.add('open');
+    setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+    return;
+  }
+  const anchor = document.getElementById('anchor-' + slug);
+  if (!anchor) return;
+  const section = anchor.closest('.section');
+  if (section) section.classList.add('open');
+  setTimeout(() => anchor.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
 }
 window.addEventListener('DOMContentLoaded', openSectionFromHash);
 window.addEventListener('hashchange', openSectionFromHash);
