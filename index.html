@@ -6,30 +6,54 @@
 <link rel="icon" href="data:,">
 <title>Prompt Engineering Techniques — TERACO</title>
 <style>
+:root{
+  --bg:#faf8f4;
+  --card:#ffffff;
+  --ink:#2b2823;
+  --sub:#8d867b;
+  --accent:#b0561f;
+  --accent-soft:#f4e9dd;
+  --line:#e7e0d4;
+  --hairline:#eee8dd;
+}
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', 'Yu Gothic', sans-serif;
-  background: #f5f6fa;
-  color: #1a1a2e;
-  padding: 32px 20px 60px;
+  font-family: "Hiragino Kaku Gothic ProN","Hiragino Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  padding: 0 20px 88px;
   min-height: 100vh;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "palt";
 }
 
-.header { text-align: center; margin-bottom: 36px; }
-.header h1 { font-size: 1.45rem; font-weight: 800; color: #1a1a2e; letter-spacing: 0.02em; }
-.header .sub { font-size: 0.75rem; color: #888; margin-top: 5px; }
-.header .hint { font-size: 0.72rem; color: #aaa; margin-top: 3px; }
+.back-row{max-width:900px;margin:0 auto;}
+.back{
+  display:inline-flex;align-items:center;
+  margin:22px 0 0;
+  color:var(--sub);font-size:12.5px;font-weight:600;letter-spacing:.03em;
+  text-decoration:none;
+}
+@media(hover:hover){.back:hover{color:var(--accent);}}
+
+.header { text-align: center; padding: 42px 18px 40px; }
+.header .brand{
+  font-size:11px;letter-spacing:.34em;color:var(--sub);font-weight:600;text-indent:.34em;
+}
+.header h1 { font-size: 26px; font-weight: 700; color: var(--ink); letter-spacing: .08em; margin-top:14px; line-height:1.4; }
+.header .rule{width:36px;height:2px;background:var(--accent);margin:18px auto 0;}
+.header .hint { font-size: 12.5px; color: var(--sub); margin-top: 16px; letter-spacing:.04em; }
 
 /* ── Accordion ── */
 .grid { max-width: 900px; margin: 0 auto; }
 .group-label {
-  font-size: 1.02rem;
-  font-weight: 800;
-  color: #2a2a40;
-  letter-spacing: 0.06em;
-  margin: 30px 0 13px;
-  padding: 3px 0 3px 13px;
-  border-left: 5px solid #888;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: .18em;
+  margin: 40px 0 14px;
+  padding: 0 2px;
 }
 .group-label:first-child { margin-top: 6px; }
 .section { margin-bottom: 12px; }
@@ -38,207 +62,203 @@ body {
   align-items: center;
   gap: 11px;
   width: 100%;
-  background: #fff;
-  border: 1.5px solid #e8e8f0;
+  background: var(--card);
+  border: 1px solid var(--line);
   border-radius: 12px;
-  padding: 15px 18px;
+  padding: 16px 18px;
   cursor: pointer;
   font-family: inherit;
   text-align: left;
-  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  transition: background .2s ease;
 }
-.section-header:hover { border-color: #cfcde8; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
-.section.open .section-header { background: #fafafe; border-color: #d6d2f5; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
-.section-dot {
-  width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
-}
+.section-header:hover { background: #fcfaf6; }
+.section.open .section-header { background: #fcfaf6; border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom-color: var(--hairline); }
+.section-dot { display: none; }
 .section-title {
   flex: 1;
-  font-size: 0.9rem;
+  font-size: 15px;
   font-weight: 700;
-  color: #2a2a40;
-  letter-spacing: 0.02em;
+  color: var(--ink);
+  letter-spacing: .03em;
 }
 .section-count {
-  font-size: 0.68rem;
-  color: #aaa;
+  font-size: 11px;
+  color: var(--sub);
   font-weight: 600;
   margin-right: 2px;
+  letter-spacing: .06em;
 }
 .chevron {
-  font-size: 0.75rem;
-  color: #b0b0c8;
-  transition: transform 0.2s;
+  font-size: 10px;
+  color: var(--accent);
+  transition: transform .25s ease;
 }
 .section.open .chevron { transform: rotate(90deg); }
 .section-body {
   display: none;
   grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
+  gap: 12px;
   padding: 14px;
-  border: 1.5px solid #e8e8f0;
+  border: 1px solid var(--line);
   border-top: none;
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
-  background: #fbfbfe;
+  background: var(--card);
 }
 .section.open .section-body { display: grid; }
 .subhead {
   grid-column: 1 / -1;
-  font-size: 0.74rem;
+  font-size: 12px;
   font-weight: 700;
-  color: #777;
-  letter-spacing: 0.06em;
-  padding: 4px 2px 7px;
-  margin-top: 6px;
-  border-bottom: 1px dashed #d8d8e4;
+  color: var(--sub);
+  letter-spacing: .08em;
+  padding: 6px 2px 8px;
+  margin-top: 8px;
+  border-bottom: 1px solid var(--hairline);
 }
 .subhead:first-child { margin-top: 0; }
 
 .card {
-  background: #fff;
-  border: 1.5px solid #e8e8f0;
-  border-radius: 14px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
   padding: 16px 16px 13px;
   cursor: pointer;
-  transition: border-color 0.18s, box-shadow 0.18s, transform 0.15s;
+  transition: border-color .18s, background .15s;
 }
-.card:hover { border-color: #6c63ff; box-shadow: 0 4px 18px rgba(108,99,255,0.12); transform: translateY(-2px); }
-.card.open { border-color: #6c63ff; background: #faf9ff; }
-.card .num { font-size: 0.6rem; color: #ccc; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 4px; }
-.card .en  { font-size: 0.82rem; font-weight: 800; color: #1a1a2e; line-height: 1.35; margin-bottom: 3px; }
-.card .kana { font-size: 0.65rem; color: #aaa; margin-bottom: 8px; line-height: 1.4; }
-.card .desc { font-size: 0.7rem; color: #555; line-height: 1.6; }
+.card:hover { border-color: var(--accent); }
+.card.open { border-color: var(--accent); background: #fcfaf6; }
+.card .num { font-size: 10px; color: #c9c2b5; font-weight: 600; letter-spacing: .1em; margin-bottom: 5px; font-variant-numeric: tabular-nums; }
+.card .en  { font-size: 13.5px; font-weight: 700; color: var(--ink); line-height: 1.45; margin-bottom: 4px; letter-spacing: .02em; }
+.card .kana { font-size: 11px; color: var(--sub); margin-bottom: 9px; line-height: 1.5; }
+.card .desc { font-size: 11.5px; color: #5d574d; line-height: 1.65; }
 .tag {
-  display: inline-block; font-size: 0.58rem; padding: 3px 10px;
-  border-radius: 99px; margin-top: 10px; font-weight: 700; letter-spacing: 0.04em;
+  display: inline-block; font-size: 10px; padding: 3px 10px;
+  border-radius: 999px; margin-top: 11px; font-weight: 700; letter-spacing: .05em;
+  background: var(--accent-soft); color: var(--accent);
 }
-.t-basic  { background: #e8faf2; color: #27ae60; }
-.t-core   { background: #e8f0ff; color: #3a7bd5; }
-.t-reason { background: #f0ecff; color: #6c63ff; }
-.t-struct { background: #fffbe8; color: #e0a800; }
-.t-adv    { background: #fff0f3; color: #e05c6f; }
-.t-image  { background: #fce8ff; color: #a63dc7; }
-.t-course { background: #fff4e0; color: #e07b00; }
-.t-phone  { background: #e9ebfa; color: #4f63be; }
-.t-summer { background: #e0f5f1; color: #1f9d8f; }
-.t-soon   { background: #eeeef2; color: #9a9aae; }
+.t-basic, .t-core, .t-reason, .t-struct, .t-adv, .t-image,
+.t-course, .t-phone, .t-summer { background: var(--accent-soft); color: var(--accent); }
+.t-soon { background: #efece5; color: var(--sub); }
 
 .panel {
   display: none; grid-column: 1 / -1; position: relative;
-  background: #fff; border: 1.5px solid #6c63ff;
-  border-radius: 16px; padding: 28px 30px;
-  animation: fadeIn 0.2s ease;
+  background: var(--card); border: 1px solid var(--accent);
+  border-radius: 14px; padding: 28px 30px;
+  animation: fadeIn .2s ease;
 }
 .panel.show { display: block; }
 @keyframes fadeIn { from { opacity:0; transform: translateY(-6px); } to { opacity:1; transform: translateY(0); } }
 
 .helper-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
 .example-btn, .clear-btn {
-  background: #f1eff8; color: #6c63ff;
-  border: 1px solid #ddd9ec; border-radius: 7px;
-  padding: 6px 13px; font-size: 0.69rem; font-weight: 700;
-  cursor: pointer; font-family: inherit; transition: background 0.15s, color 0.15s;
+  background: var(--accent-soft); color: var(--accent);
+  border: none; border-radius: 8px;
+  padding: 7px 14px; font-size: 11.5px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: background .15s, color .15s;
+  letter-spacing: .03em;
 }
-.example-btn:hover { background: #e3dffa; }
-.clear-btn { color: #8a8aa0; }
-.clear-btn:hover { background: #ececf2; color: #666; }
+.example-btn:hover { background: #eddcc8; }
+.clear-btn { background: #f1ede5; color: var(--sub); }
+.clear-btn:hover { background: #e9e4d9; color: #6b655a; }
 
-.p-en   { font-size: 1.1rem; font-weight: 800; color: #1a1a2e; }
-.p-kana { font-size: 0.72rem; color: #aaa; margin: 3px 0 14px; }
+.p-en   { font-size: 18px; font-weight: 700; color: var(--ink); letter-spacing: .03em; }
+.p-kana { font-size: 12px; color: var(--sub); margin: 4px 0 16px; }
 
 /* 提唱者バッジ */
 .p-author {
   display: flex; align-items: flex-start; gap: 10px;
-  background: #f5f6fa; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
+  background: #f7f4ee; border-radius: 10px; padding: 13px 16px; margin-bottom: 20px;
 }
-.p-author-icon { font-size: 1rem; margin-top: 1px; flex-shrink: 0; }
-.p-author-label { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #aaa; margin-bottom: 4px; }
-.p-author-name  { font-size: 0.78rem; font-weight: 700; color: #1a1a2e; margin-bottom: 2px; }
-.p-author-kana  { font-size: 0.68rem; color: #6c63ff; margin-bottom: 4px; }
-.p-author-cite  { font-size: 0.68rem; color: #888; line-height: 1.6; }
+.p-author-icon { display: none; }
+.p-author-label { font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--sub); margin-bottom: 4px; }
+.p-author-name  { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+.p-author-kana  { font-size: 11.5px; color: var(--accent); margin-bottom: 4px; }
+.p-author-cite  { font-size: 11.5px; color: var(--sub); line-height: 1.65; }
 
-.p-desc { font-size: 0.8rem; color: #333; line-height: 1.9; margin-bottom: 22px; }
+.p-desc { font-size: 13.5px; color: #46413a; line-height: 1.9; margin-bottom: 22px; }
 
 .p-section-ttl {
-  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em;
-  text-transform: uppercase; color: #6c63ff; margin-bottom: 10px;
+  font-size: 10.5px; font-weight: 600; letter-spacing: .16em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
 }
 
 .example {
-  background: #faf9ff; border-left: 3px solid #6c63ff; border-radius: 8px;
-  padding: 14px 18px; font-size: 0.74rem; color: #333;
+  background: #faf7f1; border-left: 3px solid var(--accent); border-radius: 8px;
+  padding: 14px 18px; font-size: 12.5px; color: #46413a;
   white-space: pre-wrap; line-height: 1.85;
   font-family: 'Menlo', 'Courier New', monospace; margin-bottom: 24px;
 }
 
 /* コピー専用カード（完成プロンプト型） */
 .steps { margin: 0 0 20px 1.2em; padding: 0; }
-.steps li { font-size: 0.76rem; color: #333; line-height: 1.7; margin-bottom: 4px; }
+.steps li { font-size: 13px; color: #46413a; line-height: 1.7; margin-bottom: 4px; }
 .hints { margin: 0 0 18px 1.2em; padding: 0; }
-.hints li { font-size: 0.74rem; color: #555; line-height: 1.7; margin-bottom: 4px; }
+.hints li { font-size: 12.5px; color: #5d574d; line-height: 1.7; margin-bottom: 4px; }
 .fixed-copy { margin-bottom: 22px; }
 .safety-note {
-  font-size: 0.68rem; color: #b06b6b; line-height: 1.65;
-  background: #fdf3f3; border: 1px solid #f2dede; border-radius: 8px;
+  font-size: 11.5px; color: #8a5a44; line-height: 1.65;
+  background: #f8efe8; border: 1px solid #ecd9cb; border-radius: 8px;
   padding: 10px 13px; margin-top: 4px;
 }
 
 /* テンプレート */
 .template-box {
-  background: #fafafe; border: 1.5px solid #e0deff;
+  background: #faf8f3; border: 1px solid var(--line);
   border-radius: 12px; padding: 20px 22px; margin-bottom: 4px;
 }
-.tmpl-intro { font-size: 0.72rem; color: #666; margin-bottom: 18px; line-height: 1.7; }
+.tmpl-intro { font-size: 12px; color: #6b655a; margin-bottom: 18px; line-height: 1.7; }
 .template-field { margin-bottom: 14px; }
 .template-field label {
-  display: block; font-size: 0.65rem; font-weight: 700;
-  color: #6c63ff; margin-bottom: 5px; letter-spacing: 0.04em;
+  display: block; font-size: 11px; font-weight: 700;
+  color: var(--accent); margin-bottom: 5px; letter-spacing: .05em;
 }
 .template-field .field-note {
-  font-size: 0.62rem; color: #aaa; font-weight: 400; margin-left: 6px;
+  font-size: 10.5px; color: var(--sub); font-weight: 400; margin-left: 6px;
 }
 .template-field input,
 .template-field textarea,
 .template-field select {
-  width: 100%; border: 1.5px solid #e0deff; border-radius: 8px;
-  padding: 9px 13px; font-size: 0.76rem; color: #1a1a2e;
+  width: 100%; border: 1px solid var(--line); border-radius: 8px;
+  padding: 10px 13px; font-size: 13px; color: var(--ink);
   font-family: inherit; background: #fff; outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s; resize: vertical;
+  transition: border-color .15s, box-shadow .15s; resize: vertical;
 }
 .template-field input:focus,
 .template-field textarea:focus,
-.template-field select:focus { border-color: #6c63ff; box-shadow: 0 0 0 3px rgba(108,99,255,0.08); }
+.template-field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(176,86,31,.08); }
 .template-field textarea { min-height: 80px; }
-.template-field textarea.main-field { min-height: 110px; font-size: 0.78rem; }
+.template-field textarea.main-field { min-height: 110px; font-size: 13.5px; }
 
 /* ボタン */
 .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
 .preview-btn {
   display: inline-flex; align-items: center; gap: 6px;
-  background: #f0eeff; color: #6c63ff; border: 1.5px solid #c4b8ff;
-  border-radius: 8px; padding: 10px 22px; font-size: 0.74rem; font-weight: 700;
-  cursor: pointer; transition: background 0.15s, transform 0.12s; font-family: inherit;
+  background: #fff; color: var(--accent); border: 1px solid var(--accent);
+  border-radius: 8px; padding: 10px 22px; font-size: 12.5px; font-weight: 700;
+  cursor: pointer; transition: background .15s; font-family: inherit;
+  letter-spacing: .03em;
 }
-.preview-btn:hover { background: #e4dfff; transform: translateY(-1px); }
+.preview-btn:hover { background: var(--accent-soft); }
 .copy-btn {
   display: inline-flex; align-items: center; gap: 6px;
-  background: #6c63ff; color: #fff; border: none;
-  border-radius: 8px; padding: 10px 22px; font-size: 0.74rem; font-weight: 700;
-  cursor: pointer; transition: background 0.15s, transform 0.12s; font-family: inherit;
+  background: var(--accent); color: #fff; border: none;
+  border-radius: 8px; padding: 10px 22px; font-size: 12.5px; font-weight: 700;
+  cursor: pointer; transition: background .15s; font-family: inherit;
+  letter-spacing: .03em;
 }
-.copy-btn:hover { background: #5549e0; transform: translateY(-1px); }
-.copy-btn.copied { background: #27ae60; }
+.copy-btn:hover { background: #974817; }
+.copy-btn.copied { background: #4c7a4c; }
 
 /* プレビュー */
-.prompt-preview { display: none; margin-top: 16px; background: #f0eeff; border: 1.5px solid #c4b8ff; border-radius: 10px; overflow: hidden; }
+.prompt-preview { display: none; margin-top: 16px; background: #faf7f1; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
 .prompt-preview.show { display: block; }
 .prompt-preview-label {
-  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-  color: #6c63ff; padding: 9px 16px 7px; border-bottom: 1px solid #ddd6ff;
+  font-size: 10.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--accent); padding: 9px 16px 7px; border-bottom: 1px solid var(--hairline);
 }
 .prompt-preview-text {
-  padding: 14px 18px; font-size: 0.76rem; color: #1a1a2e;
+  padding: 14px 18px; font-size: 13px; color: var(--ink);
   white-space: pre-wrap; line-height: 1.85;
   font-family: 'Menlo', 'Courier New', monospace;
 }
@@ -249,11 +269,16 @@ body {
 </head>
 <body>
 
-<div class="header">
-  <h1>Prompt Engineering Template<br><span style="font-size:0.75rem;color:#888;font-weight:600;letter-spacing:0;">プロンプトエンジニアリングテンプレート</span></h1>
-  <p class="hint">カードをクリックすると解説・提唱者・テンプレートが表示されます</p>
+<div class="back-row">
+  <a class="back" href="https://teraco-labo.github.io/line-outou/">← てらこ図書館にもどる</a>
 </div>
 
+<div class="header">
+  <div class="brand">TERACO.LABO</div>
+  <h1>プロンプトテンプレート</h1>
+  <div class="rule"></div>
+  <p class="hint">カードをクリックすると解説・テンプレートが表示されます</p>
+</div>
 <div class="grid" id="grid"></div>
 
 <script>
@@ -1018,7 +1043,7 @@ ${v[1] ? "あと、" + v[1] + "を持たせてみて！" : ""}背景は真っ白
     kana: "せまる敵を、上から下へ撃ちまくる！",
     tag: "t-course", tagLabel: "AI講座",
     desc: "画面が上から下へ流れ、せまる敵を撃つシューティングゲーム<br><b>ドラゴンなど空を飛ぶキャラ向き</b>",
-    detail: "<b>どんなゲーム？</b><br>画面が上から下へ流れて、せまってくる敵をどんどん撃っていくゲームです。<br><br><b>代表的なゲーム</b><br>『ドラゴンスピリット』『ゼビウス』<br><br><b>向いているキャラ</b><br>ドラゴンなど、空を飛ぶキャラがぴったり！<br><br><b>💡 おすすめ：</b>弾幕系（ショットのレベルアップ・バリア・ボム）を足すと、難易度が上がって迫力満点になります。",
+    detail: "<b>どんなゲーム？</b><br>画面が上から下へ流れて、せまってくる敵をどんどん撃っていくゲームです。<br><br><b>代表的なゲーム</b><br>『ドラゴンスピリット』『ゼビウス』<br><br><b>向いているキャラ</b><br>ドラゴンなど、空を飛ぶキャラがぴったり！<br><br><b>おすすめ：</b>弾幕系（ショットのレベルアップ・バリア・ボム）を足すと、難易度が上がって迫力満点になります。",
     tmplIntro: "第1回で作ったキャラ画像を貼り付けてから、入れたいアイデアを書いて「コピー」を押そう（空でもOK）。",
     fields: [
       { label: "入れたいアイデア・オリジナル要素", note: "（空でもOK）", type: "textarea", cls: "main-field", placeholder: "例：ボスを出して" },
@@ -1030,7 +1055,7 @@ ${v[1] ? "あと、" + v[1] + "を持たせてみて！" : ""}背景は真っ白
     kana: "走ってジャンプ！王道アクション",
     tag: "t-course", tagLabel: "AI講座",
     desc: "横に進みながらジャンプや障害物をこえるアクションゲーム<br><b>キャラクターや動物向き</b>",
-    detail: "<b>どんなゲーム？</b><br>横に進みながら、ジャンプで障害物や敵をこえていくゲームです。<br><br><b>代表的なゲーム</b><br>『スーパーマリオ』<br><br><b>向いているキャラ</b><br>キャラクターや動物がぴったり！<br><br><b>💡 おすすめ：</b>アイテムでレベルアップしたり、特殊技（ファイヤボール・大きくなる）があると楽しくなります。",
+    detail: "<b>どんなゲーム？</b><br>横に進みながら、ジャンプで障害物や敵をこえていくゲームです。<br><br><b>代表的なゲーム</b><br>『スーパーマリオ』<br><br><b>向いているキャラ</b><br>キャラクターや動物がぴったり！<br><br><b>おすすめ：</b>アイテムでレベルアップしたり、特殊技（ファイヤボール・大きくなる）があると楽しくなります。",
     tmplIntro: "第1回で作ったキャラ画像を貼り付けてから、入れたいアイデアを書いて「コピー」を押そう（空でもOK）。",
     fields: [
       { label: "入れたいアイデア・オリジナル要素", note: "（空でもOK）", type: "textarea", cls: "main-field", placeholder: "例：アイテムで大きくなる" },
@@ -1042,7 +1067,7 @@ ${v[1] ? "あと、" + v[1] + "を持たせてみて！" : ""}背景は真っ白
     kana: "コースを走って1位をめざせ！",
     tag: "t-course", tagLabel: "AI講座",
     desc: "コースを走って順位を競うレースゲーム<br><b>乗り物・車・バイク向き</b>",
-    detail: "<b>どんなゲーム？</b><br>コースを走って、ほかのキャラと順位を競うゲームです。<br><br><b>代表的なゲーム</b><br>『マリオカート』『グランツーリスモ』<br><br><b>向いているキャラ</b><br>乗り物・車・バイクがぴったり！<br><br><b>💡 おすすめ：</b>視点の切り替えを入れると、キャラや乗り物のデザインを活かせます。",
+    detail: "<b>どんなゲーム？</b><br>コースを走って、ほかのキャラと順位を競うゲームです。<br><br><b>代表的なゲーム</b><br>『マリオカート』『グランツーリスモ』<br><br><b>向いているキャラ</b><br>乗り物・車・バイクがぴったり！<br><br><b>おすすめ：</b>視点の切り替えを入れると、キャラや乗り物のデザインを活かせます。",
     tmplIntro: "第1回で作ったキャラ画像を貼り付けてから、入れたいアイデアを書いて「コピー」を押そう（空でもOK）。",
     fields: [
       { label: "入れたいアイデア・オリジナル要素", note: "（空でもOK）", type: "textarea", cls: "main-field", placeholder: "例：アイテムを使えるように" },
@@ -1054,7 +1079,7 @@ ${v[1] ? "あと、" + v[1] + "を持たせてみて！" : ""}背景は真っ白
     kana: "サッカー・テニス・バスケで勝負！",
     tag: "t-course", tagLabel: "AI講座",
     desc: "サッカー・テニス・バスケなどの競技スポーツゲーム<br><b>人型や動物など動かしやすいキャラ向き</b>",
-    detail: "<b>どんなゲーム？</b><br>サッカー・テニス・バスケットボールなど、スポーツで勝ち負けを競うゲームです。<br><br><b>代表的なゲーム</b><br>サッカー・テニス・バスケットボール<br><br><b>向いているキャラ</b><br>人型や動物など、動かしやすいキャラがぴったり！<br><br><b>💡 おすすめ：</b>かんたんなルールで、勝ち負けがはっきり出ると盛り上がります。",
+    detail: "<b>どんなゲーム？</b><br>サッカー・テニス・バスケットボールなど、スポーツで勝ち負けを競うゲームです。<br><br><b>代表的なゲーム</b><br>サッカー・テニス・バスケットボール<br><br><b>向いているキャラ</b><br>人型や動物など、動かしやすいキャラがぴったり！<br><br><b>おすすめ：</b>かんたんなルールで、勝ち負けがはっきり出ると盛り上がります。",
     tmplIntro: "第1回で作ったキャラ画像を貼り付けてから、入れたいアイデアを書いて「コピー」を押そう（空でもOK）。",
     fields: [
       { label: "入れたいアイデア・オリジナル要素", note: "（空でもOK）", type: "textarea", cls: "main-field", placeholder: "例：サッカーで作って" },
@@ -1066,7 +1091,7 @@ ${v[1] ? "あと、" + v[1] + "を持たせてみて！" : ""}背景は真っ白
     kana: "並べて消して、連鎖でハイスコア！",
     tag: "t-course", tagLabel: "AI講座",
     desc: "同じものを並べたり消したりして遊ぶパズルゲーム<br><b>マスコットのようなかわいいキャラ向き</b>",
-    detail: "<b>どんなゲーム？</b><br>同じものを並べたり消したりして、ハイスコアをねらうゲームです。<br><br><b>代表的なゲーム</b><br>『ぷよぷよ』『テトリス』『パズル＆ドラゴンズ（パズドラ）』<br><br><b>向いているキャラ</b><br>マスコットのような、かわいいキャラがぴったり！<br><br><b>💡 おすすめ：</b>コンボや連鎖でハイスコアをねらえると楽しくなります。",
+    detail: "<b>どんなゲーム？</b><br>同じものを並べたり消したりして、ハイスコアをねらうゲームです。<br><br><b>代表的なゲーム</b><br>『ぷよぷよ』『テトリス』『パズル＆ドラゴンズ（パズドラ）』<br><br><b>向いているキャラ</b><br>マスコットのような、かわいいキャラがぴったり！<br><br><b>おすすめ：</b>コンボや連鎖でハイスコアをねらえると楽しくなります。",
     tmplIntro: "第1回で作ったキャラ画像を貼り付けてから、入れたいアイデアを書いて「コピー」を押そう（空でもOK）。",
     fields: [
       { label: "入れたいアイデア・オリジナル要素", note: "（空でもOK）", type: "textarea", cls: "main-field", placeholder: "例：連鎖でドカンと消える" },
@@ -1078,7 +1103,7 @@ ${v[1] ? "あと、" + v[1] + "を持たせてみて！" : ""}背景は真っ白
     kana: "リズムに合わせてタップ！",
     tag: "t-course", tagLabel: "AI講座",
     desc: "リズムに合わせてタップする音楽ゲーム<br><b>動きや表情が豊かなキャラ向き</b>",
-    detail: "<b>どんなゲーム？</b><br>音楽のリズムに合わせて、タイミングよくタップするゲームです。<br><br><b>代表的なゲーム</b><br>『太鼓の達人』『プロジェクトセカイ（プロセカ）』<br><br><b>向いているキャラ</b><br>動きや表情が豊かなキャラがぴったり！<br><br><b>💡 おすすめ：</b>タイミングよく押すと気持ちいい演出があると盛り上がります。",
+    detail: "<b>どんなゲーム？</b><br>音楽のリズムに合わせて、タイミングよくタップするゲームです。<br><br><b>代表的なゲーム</b><br>『太鼓の達人』『プロジェクトセカイ（プロセカ）』<br><br><b>向いているキャラ</b><br>動きや表情が豊かなキャラがぴったり！<br><br><b>おすすめ：</b>タイミングよく押すと気持ちいい演出があると盛り上がります。",
     tmplIntro: "第1回で作ったキャラ画像を貼り付けてから、入れたいアイデアを書いて「コピー」を押そう（空でもOK）。",
     fields: [
       { label: "入れたいアイデア・オリジナル要素", note: "（空でもOK）", type: "textarea", cls: "main-field", placeholder: "例：キャラがリズムに合わせて踊る" },
@@ -2101,7 +2126,7 @@ sections.forEach((sec) => {
       ${stepsHtml ? `<div class="p-section-ttl">使い方</div><ol class="steps">${stepsHtml}</ol>` : ''}
       <div class="p-section-ttl">完成プロンプト（このままコピーして使う）</div>
       <div class="example">${c.prompt}</div>
-      <button class="copy-btn fixed-copy">📋 プロンプトをコピー</button>
+      <button class="copy-btn fixed-copy">プロンプトをコピー</button>
       ${hintsHtml ? `<div class="p-section-ttl">改造のヒント</div><ul class="hints">${hintsHtml}</ul>` : ''}
       <p class="safety-note">名前・住所・学校名・電話番号などの個人情報は入力しないでください。AIの回答は正しいとは限りません。大切な内容は人間が確認してください。</p>
     `;
@@ -2125,9 +2150,9 @@ sections.forEach((sec) => {
       e.stopPropagation();
       const btn = e.currentTarget;
       function onCopied() {
-        btn.textContent = '✅ コピーしました！';
+        btn.textContent = 'コピーしました';
         btn.classList.add('copied');
-        setTimeout(() => { btn.innerHTML = '📋 プロンプトをコピー'; btn.classList.remove('copied'); }, 2500);
+        setTimeout(() => { btn.innerHTML = 'プロンプトをコピー'; btn.classList.remove('copied'); }, 2500);
       }
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(c.prompt).then(onCopied).catch(() => fallbackCopy(c.prompt, onCopied));
@@ -2156,8 +2181,7 @@ sections.forEach((sec) => {
   panel.className = 'panel';
   const authorHtml = c.cite ? `
     <div class="p-author">
-      <div class="p-author-icon">📄</div>
-      <div class="p-author-body">
+            <div class="p-author-body">
         <div class="p-author-label">提唱者・出典</div>
         <div class="p-author-name">${c.authorName}</div>
         <div class="p-author-cite">${c.cite}</div>
@@ -2178,13 +2202,13 @@ sections.forEach((sec) => {
     <div class="template-box">
       <p class="tmpl-intro">${c.tmplIntro}</p>
       <div class="helper-row">
-        <button class="example-btn">✏️ 例を入れてみる</button>
-        <button class="clear-btn">🧹 ぜんぶ消す</button>
+        <button class="example-btn">例を入れてみる</button>
+        <button class="clear-btn">ぜんぶ消す</button>
       </div>
       ${fieldsHtml}
       <div class="btn-row">
-        <button class="preview-btn" data-idx="${i}">👁 プロンプトを確認する</button>
-        <button class="copy-btn" data-idx="${i}">📋 コピー</button>
+        <button class="preview-btn" data-idx="${i}">プロンプトを確認する</button>
+        <button class="copy-btn" data-idx="${i}">コピー</button>
       </div>
       <div class="prompt-preview">
         <div class="prompt-preview-label">生成されたプロンプト（確認してからコピーしてください）</div>
@@ -2236,9 +2260,9 @@ sections.forEach((sec) => {
     const text = showPreview();
     const btn = e.currentTarget;
     function onCopied() {
-      btn.textContent = '✅ コピーしました！';
+      btn.textContent = 'コピーしました';
       btn.classList.add('copied');
-      setTimeout(() => { btn.innerHTML = '📋 コピー'; btn.classList.remove('copied'); }, 2500);
+      setTimeout(() => { btn.innerHTML = 'コピー'; btn.classList.remove('copied'); }, 2500);
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(onCopied).catch(() => fallbackCopy(text, onCopied));
