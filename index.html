@@ -2053,6 +2053,127 @@ ${v[3] || "選択範囲の外側すべて"}
 
 選択範囲の外は変更しないでください。修正後も、元画像の人物・文字・構図・縦横比を保ってください。`
   },
+  // ─── おとなのAI講座 第4回：音楽・短い動画 ───────────
+  {
+    subhead: "第4回：AIで、音楽と短い動画をつくる", anchor: "adult-music-video",
+    en: "① 音楽の雰囲気を言葉にする",
+    kana: "Suno用：使う場面・雰囲気・楽器・速さをまとめる",
+    tag: "t-course", tagLabel: "音楽生成",
+    desc: "仕事・生活・アートから題材を選び、歌なしの短いBGMを設計する",
+    detail: "音楽生成AIには、曲名だけでなく「何に使うか」「どんな気分にしたいか」「どんな音を使うか」を順番に伝えます。下の3例から近いものを選び、自分らしくしたい部分を一つだけ変えてください。講座では歌詞を広げず、場面に合う歌なしのBGMを1曲作ります。",
+    tmplIntro: "まず3つの例から近いものを選びます。自分の案に変えたい欄だけ書き換えてください。",
+    presets: [
+      { label: "仕事の例", values: ["架空の焼き菓子店の秋フェアを紹介する短い動画のBGM", "温かく上品で、少しわくわくする", "アコースティック・ポップ", "ピアノとアコースティックギター", "中くらい", "歌なし（インストゥルメンタル）"] },
+      { label: "生活の例", values: ["雨の日曜日の朝、家でゆっくり過ごす時間のBGM", "落ち着いて、気持ちが整う", "ローファイ・ジャズ", "柔らかなピアノとブラシドラム", "ゆっくり", "歌なし（インストゥルメンタル）"] },
+      { label: "アートの例", values: ["雲の上の図書館を歩く空想の場面に流れるBGM", "神秘的で夢のようだが、怖くない", "アンビエント", "ガラスのベルと遠くで響くコーラスのような音", "ゆっくり", "歌なし（インストゥルメンタル）"] },
+    ],
+    fields: [
+      { label: "使う場面・用途", note: "（どこで流す音楽か）", type: "textarea", cls: "main-field", placeholder: "例：架空の焼き菓子店の秋フェアを紹介する短い動画のBGM" },
+      { label: "雰囲気・気分", note: "（聴いた人にどう感じてほしいか）", type: "input", placeholder: "例：温かく上品で、少しわくわくする" },
+      { label: "ジャンル", note: "（わからなければ日常語でもOK）", type: "input", placeholder: "例：アコースティック・ポップ" },
+      { label: "主な楽器・音", note: "（二つくらい）", type: "input", placeholder: "例：ピアノとアコースティックギター" },
+      { label: "速さ", note: "", type: "select", options: ["ゆっくり", "中くらい", "速め"], default: "中くらい" },
+      { label: "歌の有無", note: "", type: "select", options: ["歌なし（インストゥルメンタル）", "日本語の歌", "英語の歌"], default: "歌なし（インストゥルメンタル）" },
+    ],
+    build: (v) =>
+`次の条件で、オリジナル音楽を1曲作ってください。
+
+【使う場面・用途】
+${v[0] || "短い映像に合わせるBGM"}
+
+【雰囲気・気分】
+${v[1] || "場面に合う、親しみやすい雰囲気"}
+
+【ジャンル】
+${v[2] || "内容に合うジャンル"}
+
+【主な楽器・音】
+${v[3] || "ジャンルに合う楽器"}
+
+【速さ】
+${v[4] || "中くらい"}
+
+【歌の有無】
+${v[5] || "歌なし（インストゥルメンタル）"}
+
+条件:
+- 冒頭から場面の雰囲気が伝わる、聴きやすい構成にする
+- 有名な曲や特定の歌手をまねず、オリジナルの音楽にする
+- 歌なしを選んだ場合は、歌詞や人の歌声を入れない
+- 用途と雰囲気に合わない大きな音や急な変化を入れない`
+  },
+  {
+    en: "② 画像を5〜6秒の動画にする",
+    kana: "Image-to-Video（イメージ・トゥ・ビデオ）",
+    tag: "t-course", tagLabel: "動画生成",
+    desc: "配布画像を使い、主役の形を保ったまま小さな動きを加える",
+    detail: "画像から動画を作るときは、画像の説明を長く繰り返すより「何を動かすか」「カメラをどう動かすか」「何を変えないか」を明確にします。下の3例から、音楽で選んだ題材と同じものを選んでください。5〜6秒、標準画質、音声なしを基本にすると、クレジット消費を抑えられます。",
+    tmplIntro: "先に配布画像を動画生成AIへアップロードします。3つの例から同じ題材を選び、必要な部分だけ書き換えてください。",
+    presets: [
+      { label: "仕事の例", values: ["木のテーブルに置かれた、ロゴのない小さなギフトボックス", "リボンがゆっくり揺れる", "背景の光がわずかに変化する", "右から左へ少しだけ回り込む", "暖かな朝の光、上品で親しみやすい", "箱の形と色を変えない。文字やロゴを出さない", "5秒"] },
+      { label: "生活の例", values: ["雨の窓辺に置かれたコーヒーカップ", "湯気がゆっくり上がる", "窓の雨粒が静かに流れる", "ごくゆっくり近づく", "静かで落ち着いた朝", "カップの形を変えない。人物や文字を増やさない", "5秒"] },
+      { label: "アートの例", values: ["海の中にある古い図書館", "開いた本のページが水中をゆっくり漂う", "小さな魚が本棚の間を通る", "静かに前へ進む", "青い光、夢のようで神秘的", "本棚と本の形を大きく変えない。文字やロゴを出さない", "6秒"] },
+    ],
+    fields: [
+      { label: "画像の主役", note: "（何の画像かを短く確認）", type: "textarea", cls: "main-field", placeholder: "例：雨の窓辺に置かれたコーヒーカップ" },
+      { label: "主役の動き", note: "（一つ）", type: "input", placeholder: "例：湯気がゆっくり上がる" },
+      { label: "背景や小物の動き", note: "（一つ。不要なら空欄）", type: "input", placeholder: "例：窓の雨粒が静かに流れる" },
+      { label: "カメラの動き", note: "（一つ）", type: "select", options: ["固定する", "ごくゆっくり近づく", "ごくゆっくり遠ざかる", "右から左へ少しだけ回り込む", "静かに前へ進む"], default: "ごくゆっくり近づく" },
+      { label: "光・雰囲気", note: "", type: "input", placeholder: "例：静かで落ち着いた朝" },
+      { label: "変えないこと", note: "（形・色・文字など）", type: "textarea", placeholder: "例：カップの形を変えない。人物や文字を増やさない" },
+      { label: "動画の長さ", note: "", type: "select", options: ["5秒", "6秒"], default: "5秒" },
+    ],
+    build: (v) =>
+`添付した画像を使って、${v[6] || "5秒"}の短い動画を作ってください。
+
+【画像の主役】
+${v[0] || "添付画像の主役"}
+
+【主役の動き】
+${v[1] || "自然で小さな動きを一つ加える"}
+${v[2] ? `
+【背景や小物の動き】
+${v[2]}
+` : ""}
+【カメラの動き】
+${v[3] || "固定する"}
+
+【光・雰囲気】
+${v[4] || "元の画像の雰囲気を保つ"}
+
+【変えないこと】
+${v[5] || "主役の形、色、全体の構図を変えない"}
+
+条件:
+- 添付画像の構図と主役を保ったまま、自然で控えめな動きを加える
+- 見せ場は一つに絞り、急な動きや大きな変形を避ける
+- 新しい人物、文字、ロゴを勝手に加えない
+- 音声は付けない`
+  },
+  {
+    en: "③ 1か所だけ直して再生成する",
+    kana: "残り時間とクレジットがある人だけ",
+    tag: "t-course", tagLabel: "再調整",
+    desc: "最初のプロンプトを残し、動き・カメラ・雰囲気の一つだけを変える",
+    detail: "最初の動画を見て、直したい点を一つだけ選びます。他の条件を残したまま一語または一文だけ変えると、どの指示が結果に影響したか比べやすくなります。クレジット残量が少ない場合は再生成せず、変更後のプロンプトを保存して終わります。",
+    tmplIntro: "最初に使ったプロンプトを貼り、変更前と変更後の言葉を一つずつ入力してください。",
+    presets: [
+      { label: "生活の例", values: ["添付した画像を使って、5秒の短い動画を作ってください。主役は雨の窓辺に置かれたコーヒーカップ。湯気がゆっくり上がる。カメラはごくゆっくり近づく。静かで落ち着いた朝。カップの形を変えない。人物や文字を増やさない。音声は付けない。", "カメラ", "ごくゆっくり近づく", "固定する"] },
+    ],
+    fields: [
+      { label: "最初に使った動画プロンプト", note: "", type: "textarea", cls: "main-field", placeholder: "例：最初に使ったプロンプトをここへ貼る" },
+      { label: "変えるもの", note: "（一つ）", type: "select", options: ["主役の動き", "背景や小物の動き", "カメラ", "光・雰囲気"], default: "カメラ" },
+      { label: "変更前の言葉", note: "（元の文と同じ言葉）", type: "input", placeholder: "例：ごくゆっくり近づく" },
+      { label: "変更後の言葉", note: "", type: "input", placeholder: "例：固定する" },
+    ],
+    build: (v) => {
+      const original = v[0] || "［最初に使った動画プロンプト］";
+      if (!v[2] || !v[3]) return original;
+      return original.includes(v[2])
+        ? original.replace(v[2], v[3])
+        : `${original}\n\n【${v[1] || "変更する条件"}の変更】\n${v[3]}`;
+    }
+  },
   // ─── パソコン講座（一般・シニア）──────────────────
   {
     cat: "パソコン講座（一般・シニア）", catColor: "#4f63be", slug: "senior",
@@ -2504,6 +2625,10 @@ sections.forEach((sec) => {
     <div class="p-section-ttl">実際のプロンプト例</div>
     <div class="example">${c.ex}</div>` : '';
 
+  const helperButtonsHtml = c.presets && c.presets.length
+    ? c.presets.map((preset, pi) => `<button class="example-btn preset-btn" data-preset="${pi}">${preset.label}</button>`).join('')
+    : '<button class="example-btn">例を入れてみる</button>';
+
   panel.innerHTML = `
     <div class="p-en">${c.en}</div>
     <div class="p-kana">${c.kana}</div>
@@ -2514,7 +2639,7 @@ sections.forEach((sec) => {
     <div class="template-box">
       <p class="tmpl-intro">${c.tmplIntro}</p>
       <div class="helper-row">
-        <button class="example-btn">例を入れてみる</button>
+        ${helperButtonsHtml}
         <button class="clear-btn">ぜんぶ消す</button>
       </div>
       ${fieldsHtml}
@@ -2583,19 +2708,36 @@ sections.forEach((sec) => {
     }
   });
 
-  // 例を入れてみる：placeholderの「例：◯◯」を実際の値として入力
-  panel.querySelector('.example-btn').addEventListener('click', (e) => {
-    e.stopPropagation();
-    panel.querySelectorAll('input[data-fi], textarea[data-fi]').forEach((el) => {
-      const ph = el.getAttribute('placeholder') || '';
-      if (/^例[：:]/.test(ph)) el.value = ph.replace(/^例[：:]\s*/, '');
+  // 例を入れてみる：複数例があるカードは選んだ例を、従来カードはplaceholderの例を入力
+  if (c.presets && c.presets.length) {
+    panel.querySelectorAll('.preset-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const preset = c.presets[+btn.getAttribute('data-preset')];
+        panel.querySelectorAll('[data-fi]').forEach((el) => {
+          const value = preset.values[+el.getAttribute('data-fi')];
+          el.value = value == null ? '' : value;
+        });
+      });
     });
-  });
+  } else {
+    panel.querySelector('.example-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      panel.querySelectorAll('input[data-fi], textarea[data-fi]').forEach((el) => {
+        const ph = el.getAttribute('placeholder') || '';
+        if (/^例[：:]/.test(ph)) el.value = ph.replace(/^例[：:]\s*/, '');
+      });
+    });
+  }
 
   // ぜんぶ消す：全部の入力欄を空にしてプレビューも消す
   panel.querySelector('.clear-btn').addEventListener('click', (e) => {
     e.stopPropagation();
     panel.querySelectorAll('input[data-fi], textarea[data-fi]').forEach((el) => { el.value = ''; });
+    panel.querySelectorAll('select[data-fi]').forEach((el) => {
+      const field = c.fields[+el.getAttribute('data-fi')];
+      el.value = field.default || (field.options || [])[0] || '';
+    });
     const preview = panel.querySelector('.prompt-preview');
     preview.classList.remove('show');
     preview.querySelector('.prompt-preview-text').textContent = '';
