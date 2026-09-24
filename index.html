@@ -2103,69 +2103,87 @@ ${v[5] || "歌なし（インストゥルメンタル）"}
 - 用途と雰囲気に合わない大きな音や急な変化を入れない`
   },
   {
-    en: "② 画像を5〜6秒の動画にする",
-    kana: "Image-to-Video（イメージ・トゥ・ビデオ）",
+    en: "② 文章から5〜6秒の動画にする",
+    kana: "Text-to-Video（テキスト・トゥ・ビデオ）",
     tag: "t-course", tagLabel: "動画生成",
-    desc: "配布画像を使い、主役の形を保ったまま小さな動きを加える",
-    detail: "画像から動画を作るときは、画像の説明を長く繰り返すより「何を動かすか」「カメラをどう動かすか」「何を変えないか」を明確にします。下の3例から、音楽で選んだ題材と同じものを選んでください。5〜6秒、標準画質、音声なしを基本にすると、クレジット消費を抑えられます。",
-    tmplIntro: "先に配布画像を動画生成AIへアップロードします。3つの例から同じ題材を選び、必要な部分だけ書き換えてください。",
+    desc: "画像を使わず、主役・動き・場所・カメラ・雰囲気から1カットをつくる",
+    detail: "文章から動画を作るときは、主役・動き・場所・カメラ・雰囲気を短く具体的に伝えます。下の3例から近いものを選び、自分らしくしたい部分を一つだけ変えてください。5〜6秒、1カット、標準画質、音声なしを基本にすると、クレジット消費を抑えられます。",
+    tmplIntro: "画像の用意は不要です。3つの例から近いものを選び、必要な部分だけ書き換えてください。",
     presets: [
-      { label: "仕事の例", values: ["木のテーブルに置かれた、ロゴのない小さなギフトボックス", "リボンがゆっくり揺れる", "背景の光がわずかに変化する", "右から左へ少しだけ回り込む", "暖かな朝の光、上品で親しみやすい", "箱の形と色を変えない。文字やロゴを出さない", "5秒"] },
-      { label: "生活の例", values: ["雨の窓辺に置かれたコーヒーカップ", "湯気がゆっくり上がる", "窓の雨粒が静かに流れる", "ごくゆっくり近づく", "静かで落ち着いた朝", "カップの形を変えない。人物や文字を増やさない", "5秒"] },
-      { label: "アートの例", values: ["海の中にある古い図書館", "開いた本のページが水中をゆっくり漂う", "小さな魚が本棚の間を通る", "静かに前へ進む", "青い光、夢のようで神秘的", "本棚と本の形を大きく変えない。文字やロゴを出さない", "6秒"] },
+      { label: "仕事の例", values: ["ロゴのない小さなギフトボックス", "リボンがゆっくり揺れる", "木のテーブルの上", "右から左へ少しだけ回り込む", "暖かな朝の光、上品で親しみやすい", "高精細な商品広告風", "文字、ロゴ、人物を出さない。箱の形と色を途中で変えない", "5秒"] },
+      { label: "生活の例", values: ["白いコーヒーカップ", "湯気がゆっくり上がる", "雨の窓辺", "ごくゆっくり近づく", "静かで落ち着いた朝", "映画のワンシーンのような自然な映像", "人物や文字を出さない。カップの形を途中で変えない", "5秒"] },
+      { label: "アートの例", values: ["開いた古い本", "ページが水中をゆっくり漂う", "海の中にある古い図書館", "静かに前へ進む", "青い光、夢のようで神秘的", "幻想的な映像アート", "文字やロゴを出さない。本や本棚を大きく変形させない", "6秒"] },
     ],
     fields: [
-      { label: "画像の主役", note: "（何の画像かを短く確認）", type: "textarea", cls: "main-field", placeholder: "例：雨の窓辺に置かれたコーヒーカップ" },
+      { label: "主役", note: "（一つ）", type: "textarea", cls: "main-field", placeholder: "例：白いコーヒーカップ" },
       { label: "主役の動き", note: "（一つ）", type: "input", placeholder: "例：湯気がゆっくり上がる" },
-      { label: "背景や小物の動き", note: "（一つ。不要なら空欄）", type: "input", placeholder: "例：窓の雨粒が静かに流れる" },
+      { label: "場所・背景", note: "（どこにあるか）", type: "input", placeholder: "例：雨の窓辺" },
       { label: "カメラの動き", note: "（一つ）", type: "select", options: ["固定する", "ごくゆっくり近づく", "ごくゆっくり遠ざかる", "右から左へ少しだけ回り込む", "静かに前へ進む"], default: "ごくゆっくり近づく" },
       { label: "光・雰囲気", note: "", type: "input", placeholder: "例：静かで落ち着いた朝" },
-      { label: "変えないこと", note: "（形・色・文字など）", type: "textarea", placeholder: "例：カップの形を変えない。人物や文字を増やさない" },
+      { label: "画風・見た目", note: "（写真風・アニメ風など）", type: "input", placeholder: "例：映画のワンシーンのような自然な映像" },
+      { label: "入れないもの・変えない条件", note: "（文字・ロゴ・変形など）", type: "textarea", placeholder: "例：人物や文字を出さない。カップの形を途中で変えない" },
       { label: "動画の長さ", note: "", type: "select", options: ["5秒", "6秒"], default: "5秒" },
     ],
     build: (v) =>
-`添付した画像を使って、${v[6] || "5秒"}の短い動画を作ってください。
+`次の条件で、文章から${v[7] || "5秒"}の短い動画を1本作ってください。
 
-【画像の主役】
-${v[0] || "添付画像の主役"}
+【主役】
+${v[0] || "主役を一つ決める"}
 
 【主役の動き】
 ${v[1] || "自然で小さな動きを一つ加える"}
-${v[2] ? `
-【背景や小物の動き】
-${v[2]}
-` : ""}
+
+【場所・背景】
+${v[2] || "主役に合う場所"}
+
 【カメラの動き】
 ${v[3] || "固定する"}
 
 【光・雰囲気】
-${v[4] || "元の画像の雰囲気を保つ"}
+${v[4] || "主役と場所に合う自然な光"}
 
-【変えないこと】
-${v[5] || "主役の形、色、全体の構図を変えない"}
+【画風・見た目】
+${v[5] || "自然で見やすい映像"}
+
+【入れないもの・変えない条件】
+${v[6] || "文字やロゴを出さず、主役を途中で大きく変形させない"}
 
 条件:
-- 添付画像の構図と主役を保ったまま、自然で控えめな動きを加える
-- 見せ場は一つに絞り、急な動きや大きな変形を避ける
-- 新しい人物、文字、ロゴを勝手に加えない
+- 最初から最後までつながる1カットにする
+- 動きは自然で控えめにする
+- 急な場面転換や大きな変形を避ける
+- 指定していない人物、文字、ロゴを勝手に加えない
 - 音声は付けない`
   },
   {
     en: "③ 1か所だけ直して再生成する",
     kana: "残り時間とクレジットがある人だけ",
     tag: "t-course", tagLabel: "再調整",
-    desc: "最初のプロンプトを残し、動き・カメラ・雰囲気の一つだけを変える",
+    desc: "最初のプロンプトを残し、主役・動き・場所・カメラ・雰囲気・画風の一つだけを変える",
     detail: "最初の動画を見て、直したい点を一つだけ選びます。他の条件を残したまま一語または一文だけ変えると、どの指示が結果に影響したか比べやすくなります。クレジット残量が少ない場合は再生成せず、変更後のプロンプトを保存して終わります。",
     tmplIntro: "最初に使ったプロンプトを貼り、変更前と変更後の言葉を一つずつ入力してください。",
     presets: [
-      { label: "生活の例", values: ["添付した画像を使って、5秒の短い動画を作ってください。主役は雨の窓辺に置かれたコーヒーカップ。湯気がゆっくり上がる。カメラはごくゆっくり近づく。静かで落ち着いた朝。カップの形を変えない。人物や文字を増やさない。音声は付けない。", "カメラ", "ごくゆっくり近づく", "固定する"] },
+      { label: "生活の例", values: ["次の条件で、文章から5秒の短い動画を1本作ってください。主役は白いコーヒーカップ。湯気がゆっくり上がる。場所は雨の窓辺。カメラはごくゆっくり近づく。静かで落ち着いた朝。映画のワンシーンのような自然な映像。人物や文字を出さない。音声は付けない。", "カメラ", "ごくゆっくり近づく", "固定する"] },
     ],
     fields: [
       { label: "最初に使った動画プロンプト", note: "", type: "textarea", cls: "main-field", placeholder: "例：最初に使ったプロンプトをここへ貼る" },
-      { label: "変えるもの", note: "（一つ）", type: "select", options: ["主役の動き", "背景や小物の動き", "カメラ", "光・雰囲気"], default: "カメラ" },
+      { label: "変えるもの", note: "（一つ）", type: "select", options: ["主役", "主役の動き", "場所・背景", "カメラ", "光・雰囲気", "画風・見た目"], default: "カメラ" },
       { label: "変更前の言葉", note: "（元の文と同じ言葉）", type: "input", placeholder: "例：ごくゆっくり近づく" },
       { label: "変更後の言葉", note: "", type: "input", placeholder: "例：固定する" },
     ],
+    changeExamples: {
+      driverIndex: 1,
+      beforeIndex: 2,
+      afterIndex: 3,
+      byChoice: {
+        "主役": ["白いコーヒーカップ", "透明なティーポット"],
+        "主役の動き": ["湯気がゆっくり上がる", "湯気が風に流れる"],
+        "場所・背景": ["雨の窓辺", "朝日が差す木のテーブル"],
+        "カメラ": ["ごくゆっくり近づく", "固定する"],
+        "光・雰囲気": ["静かで落ち着いた朝", "夕暮れの温かな雰囲気"],
+        "画風・見た目": ["映画のワンシーンのような自然な映像", "柔らかな水彩アニメーション"],
+      }
+    },
     build: (v) => {
       const original = v[0] || "［最初に使った動画プロンプト］";
       if (!v[2] || !v[3]) return original;
@@ -2708,6 +2726,30 @@ sections.forEach((sec) => {
     }
   });
 
+  // 「変えるもの」に合わせて、変更前・変更後の例を連動させる
+  function applyDependentExamples(fillValues) {
+    if (!c.changeExamples) return;
+    const config = c.changeExamples;
+    const driver = panel.querySelector(`[data-fi="${config.driverIndex}"]`);
+    const before = panel.querySelector(`[data-fi="${config.beforeIndex}"]`);
+    const after = panel.querySelector(`[data-fi="${config.afterIndex}"]`);
+    const pair = config.byChoice[driver.value];
+    if (!pair) return;
+    before.placeholder = `例：${pair[0]}`;
+    after.placeholder = `例：${pair[1]}`;
+    if (fillValues) {
+      const exampleValues = Object.values(config.byChoice).flat();
+      if (!before.value || exampleValues.includes(before.value)) before.value = pair[0];
+      if (!after.value || exampleValues.includes(after.value)) after.value = pair[1];
+    }
+  }
+
+  if (c.changeExamples) {
+    const driver = panel.querySelector(`[data-fi="${c.changeExamples.driverIndex}"]`);
+    driver.addEventListener('change', () => applyDependentExamples(true));
+    applyDependentExamples(false);
+  }
+
   // 例を入れてみる：複数例があるカードは選んだ例を、従来カードはplaceholderの例を入力
   if (c.presets && c.presets.length) {
     panel.querySelectorAll('.preset-btn').forEach((btn) => {
@@ -2718,6 +2760,7 @@ sections.forEach((sec) => {
           const value = preset.values[+el.getAttribute('data-fi')];
           el.value = value == null ? '' : value;
         });
+        applyDependentExamples(true);
       });
     });
   } else {
@@ -2738,6 +2781,7 @@ sections.forEach((sec) => {
       const field = c.fields[+el.getAttribute('data-fi')];
       el.value = field.default || (field.options || [])[0] || '';
     });
+    applyDependentExamples(false);
     const preview = panel.querySelector('.prompt-preview');
     preview.classList.remove('show');
     preview.querySelector('.prompt-preview-text').textContent = '';
