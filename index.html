@@ -108,15 +108,30 @@ body {
 .section.open .section-body { display: grid; }
 .subhead {
   grid-column: 1 / -1;
-  font-size: 12px;
+  font-size: 17px;
   font-weight: 700;
-  color: var(--sub);
-  letter-spacing: .08em;
-  padding: 6px 2px 8px;
-  margin-top: 8px;
-  border-bottom: 1px solid var(--hairline);
+  color: var(--ink);
+  letter-spacing: .04em;
+  line-height: 1.5;
+  padding: 2px 2px 4px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
 }
-.subhead:first-child { margin-top: 0; }
+.subhead .kai-no {
+  display: inline-block; font-size: 13px; font-weight: 700; letter-spacing: .06em;
+  color: #fff; background: var(--kai-c, var(--accent)); border-radius: 999px; padding: 3px 12px;
+}
+/* 回ごとの箱：回ごとに色を変えて、どの回のカードかを見分けやすくする（2026-10-13 藤崎さん） */
+.kai {
+  grid-column: 1 / -1;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  background: var(--kai-bg, #faf7f1);
+  border: 1px solid var(--kai-line, var(--line));
+  border-left: 5px solid var(--kai-c, var(--accent));
+  border-radius: 12px; padding: 14px 14px 16px;
+  margin-top: 6px;
+}
+.kai:first-child { margin-top: 0; }
+.kai .card { background: #fff; }
 
 .card {
   background: var(--card);
@@ -127,9 +142,10 @@ body {
   transition: border-color .18s, background .15s;
 }
 .card:hover { border-color: var(--accent); }
-.card.open { border-color: var(--accent); background: #fcfaf6; }
+.card.open { border-color: var(--kai-c, var(--accent)); border-width: 2px; padding: 15px 15px 12px; background: #fff; box-shadow: 0 6px 16px -10px rgba(0,0,0,.35); position: relative; }
+.card.open::after { content: '▼ ひらいています'; position: absolute; right: 12px; top: 10px; font-size: 10.5px; font-weight: 700; color: var(--kai-c, var(--accent)); }
 .card .num { font-size: 10px; color: #c9c2b5; font-weight: 600; letter-spacing: .1em; margin-bottom: 5px; font-variant-numeric: tabular-nums; }
-.card .en  { font-size: 13.5px; font-weight: 700; color: var(--ink); line-height: 1.45; margin-bottom: 4px; letter-spacing: .02em; }
+.card .en  { font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.45; margin-bottom: 4px; letter-spacing: .02em; }
 .card .kana { font-size: 11px; color: var(--sub); margin-bottom: 9px; line-height: 1.5; }
 .card .desc { font-size: 11.5px; color: #5d574d; line-height: 1.65; }
 .tag {
@@ -143,7 +159,7 @@ body {
 
 .panel {
   display: none; grid-column: 1 / -1; position: relative;
-  background: var(--card); border: 1px solid var(--accent);
+  background: var(--card); border: 2px solid var(--kai-c, var(--accent));
   border-radius: 14px; padding: 28px 30px;
   animation: fadeIn .2s ease;
 }
@@ -263,8 +279,8 @@ body {
   font-family: 'Menlo', 'Courier New', monospace;
 }
 
-@media (max-width: 640px) { .section.open .section-body { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 400px) { .section.open .section-body { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .section.open .section-body, .kai { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 400px) { .section.open .section-body, .kai { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -2748,6 +2764,35 @@ function fallbackCopy(text, cb) {
 
 const grid = document.getElementById('grid');
 let openPanel = null, openCard = null;
+// 回ごとの箱の色（線・背景・ふち）
+const KAI_COLORS = [
+  ['#b0561f', '#fbf3ea', '#ecd6c2'],
+  ['#2f7d6d', '#eef7f4', '#c9e3db'],
+  ['#4a63b5', '#f0f3fb', '#cfd8f0'],
+  ['#9a4f8f', '#f8f0f6', '#e8d0e3'],
+  ['#7a7a2a', '#f6f6ea', '#dfdfbf'],
+];
+
+// カードを押す：開いた解説は「押したカードと同じ段の、いちばん右のカードの後ろ」に入れる。
+// 隣のカードは消えずに上に並んだまま。別のカードを押せば、そちらに切り替わる（2026-10-13 藤崎さん）
+function togglePanel(card, panel) {
+  if (openPanel === panel) {
+    panel.classList.remove('show'); card.classList.remove('open');
+    openPanel = null; openCard = null;
+    return;
+  }
+  if (openPanel) { openPanel.classList.remove('show'); openCard.classList.remove('open'); }
+  const parent = card.parentElement;
+  const row = [...parent.children].filter((el) => el.classList.contains('card') && el.offsetTop === card.offsetTop);
+  const last = row[row.length - 1] || card;
+  last.after(panel);
+  panel.classList.add('show'); card.classList.add('open');
+  openPanel = panel; openCard = card;
+  setTimeout(() => {
+    const top = card.getBoundingClientRect().top;
+    if (top < 0 || top > window.innerHeight * 0.6) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 60);
+}
 
 // カードをセクションごとにまとめる
 const sections = [];
@@ -2786,16 +2831,28 @@ sections.forEach((sec) => {
   section.appendChild(body);
   grid.appendChild(section);
 
+  let host = body;          // カードを入れる先（回の見出しがあれば、その回の箱）
+  let kaiNo = 0;
   sec.items.forEach((c) => {
   const i = globalIndex++;
 
   if (c.subhead) {
+    const kai = document.createElement('div');
+    kai.className = 'kai';
+    const pal = KAI_COLORS[kaiNo++ % KAI_COLORS.length];
+    kai.style.setProperty('--kai-c', pal[0]);
+    kai.style.setProperty('--kai-bg', pal[1]);
+    kai.style.setProperty('--kai-line', pal[2]);
     const sh = document.createElement('div');
     sh.className = 'subhead';
-    if (c.anchor) sh.id = 'anchor-' + c.anchor;
-    sh.textContent = c.subhead;
-    body.appendChild(sh);
+    if (c.anchor) kai.id = 'anchor-' + c.anchor;
+    const m = c.subhead.match(/^(第\d+回)[：:]\s*(.*)$/);
+    sh.innerHTML = m ? `<span class="kai-no">${m[1]}</span><span>${m[2]}</span>` : c.subhead;
+    kai.appendChild(sh);
+    body.appendChild(kai);
+    host = kai;
   }
+  const storeKey = 'tmpl:' + (host.id || sec.cat) + ':' + c.en;
 
   const card = document.createElement('div');
   card.className = 'card';
@@ -2817,23 +2874,10 @@ sections.forEach((sec) => {
       <div class="p-desc">${c.detail}</div>
     `;
     card.addEventListener('click', () => {
-      if (openPanel && openPanel !== panel) {
-        openPanel.classList.remove('show');
-        openCard.classList.remove('open');
-      }
-      if (panel.classList.contains('show')) {
-        panel.classList.remove('show');
-        card.classList.remove('open');
-        openPanel = null; openCard = null;
-      } else {
-        panel.classList.add('show');
-        card.classList.add('open');
-        openPanel = panel; openCard = card;
-        setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
-      }
+      togglePanel(card, panel);
     });
-    body.appendChild(card);
-    body.appendChild(panel);
+    host.appendChild(card);
+    host.appendChild(panel);
     return;
   }
 
@@ -2855,20 +2899,7 @@ sections.forEach((sec) => {
       <p class="safety-note">名前・住所・学校名・電話番号などの個人情報は入力しないでください。AIの回答は正しいとは限りません。大切な内容は人間が確認してください。</p>
     `;
     card.addEventListener('click', () => {
-      if (openPanel && openPanel !== panel) {
-        openPanel.classList.remove('show');
-        openCard.classList.remove('open');
-      }
-      if (panel.classList.contains('show')) {
-        panel.classList.remove('show');
-        card.classList.remove('open');
-        openPanel = null; openCard = null;
-      } else {
-        panel.classList.add('show');
-        card.classList.add('open');
-        openPanel = panel; openCard = card;
-        setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
-      }
+      togglePanel(card, panel);
     });
     panel.querySelector('.copy-btn').addEventListener('click', (e) => {
       e.stopPropagation();
@@ -2884,8 +2915,8 @@ sections.forEach((sec) => {
         fallbackCopy(c.prompt, onCopied);
       }
     });
-    body.appendChild(card);
-    body.appendChild(panel);
+    host.appendChild(card);
+    host.appendChild(panel);
     return;
   }
 
@@ -2935,32 +2966,38 @@ sections.forEach((sec) => {
       </div>
       ${fieldsHtml}
       <div class="btn-row">
-        <button class="preview-btn" data-idx="${i}">プロンプトを確認する</button>
-        <button class="copy-btn" data-idx="${i}">コピー</button>
+        <button class="preview-btn" data-idx="${i}">プロンプトを作る</button>
+        <button class="copy-btn" data-idx="${i}">全文コピー</button>
       </div>
       <div class="prompt-preview">
-        <div class="prompt-preview-label">生成されたプロンプト（確認してからコピーしてください）</div>
+        <div class="prompt-preview-label">できたプロンプト（読んで確かめてからコピーしてください）</div>
         <div class="prompt-preview-text"></div>
       </div>
     </div>
   `;
 
   card.addEventListener('click', () => {
-    if (openPanel && openPanel !== panel) {
-      openPanel.classList.remove('show');
-      openCard.classList.remove('open');
-    }
-    if (panel.classList.contains('show')) {
-      panel.classList.remove('show');
-      card.classList.remove('open');
-      openPanel = null; openCard = null;
-    } else {
-      panel.classList.add('show');
-      card.classList.add('open');
-      openPanel = panel; openCard = card;
-      setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
-    }
+    togglePanel(card, panel);
   });
+
+  // 入力した文は、この端末のブラウザに残す。閉じても、別のカードを開いても、ページを開き直しても消えない。
+  // 消えるのは「ぜんぶ消す」を押したときだけ（2026-10-13 藤崎さん「何度もコピペするから」）
+  function saveInputs() {
+    const vals = {};
+    panel.querySelectorAll('[data-fi]').forEach((el) => { vals[el.getAttribute('data-fi')] = el.value; });
+    try { localStorage.setItem(storeKey, JSON.stringify(vals)); } catch (e) {}
+  }
+  function restoreInputs() {
+    let vals = null;
+    try { vals = JSON.parse(localStorage.getItem(storeKey) || 'null'); } catch (e) {}
+    if (!vals) return;
+    panel.querySelectorAll('[data-fi]').forEach((el) => {
+      const v = vals[el.getAttribute('data-fi')];
+      if (v != null) el.value = v;
+    });
+  }
+  panel.addEventListener('input', saveInputs);
+  panel.addEventListener('change', saveInputs);
 
   function buildPrompt() {
     const vals = [];
@@ -2990,7 +3027,7 @@ sections.forEach((sec) => {
     function onCopied() {
       btn.textContent = 'コピーしました';
       btn.classList.add('copied');
-      setTimeout(() => { btn.innerHTML = 'コピー'; btn.classList.remove('copied'); }, 2500);
+      setTimeout(() => { btn.innerHTML = '全文コピー'; btn.classList.remove('copied'); }, 2500);
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(text).then(onCopied).catch(() => fallbackCopy(text, onCopied));
@@ -3034,6 +3071,7 @@ sections.forEach((sec) => {
           el.value = value == null ? '' : value;
         });
         applyDependentExamples(true);
+        saveInputs();
       });
     });
   } else {
@@ -3043,6 +3081,7 @@ sections.forEach((sec) => {
         const ph = el.getAttribute('placeholder') || '';
         if (/^例[：:]/.test(ph)) el.value = ph.replace(/^例[：:]\s*/, '');
       });
+      saveInputs();
     });
   }
 
@@ -3058,18 +3097,16 @@ sections.forEach((sec) => {
     const preview = panel.querySelector('.prompt-preview');
     preview.classList.remove('show');
     preview.querySelector('.prompt-preview-text').textContent = '';
+    try { localStorage.removeItem(storeKey); } catch (e) {}
   });
 
-  body.appendChild(card);
-  body.appendChild(panel);
+  host.appendChild(card);
+  host.appendChild(panel);
+  restoreInputs();
   });
 });
 
-// ページを開く（または戻る/進むで再表示する）たびに、入力欄を必ず空にする。
-// ブラウザが前回入力した値を勝手に復元して「テキストが入ったように見える」のを防ぐ。
-window.addEventListener('pageshow', () => {
-  document.querySelectorAll('input[data-fi], textarea[data-fi]').forEach((el) => { el.value = ''; });
-});
+// 入力欄の中身は、各カードが自分で残した文（localStorage）だけを使う。ブラウザの自動復元は使わない。
 
 // URLの#スラッグ（例：#middle）に対応するセクションを開いた状態で表示する
 function openSectionFromHash() {
