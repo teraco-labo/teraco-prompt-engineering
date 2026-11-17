@@ -131,6 +131,10 @@ body {
   margin-top: 6px;
 }
 .kai:first-child { margin-top: 0; }
+.subnote { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 15px; font-weight: 700; color: var(--ink);
+  background: #fff; border: 1px dashed var(--kai-line, var(--line)); border-radius: 10px; padding: 10px 12px; }
+.subnote a.dl { display: inline-block; text-decoration: none; color: #fff; background: var(--kai-c, var(--accent)); border-radius: 999px; padding: 6px 16px; font-size: 15px; }
+.subnote small { flex-basis: 100%; font-weight: 400; color: #6b6259; font-size: 13px; }
 .kai .card { background: #fff; }
 
 .card {
@@ -2584,6 +2588,7 @@ ${v[2] || "ほかはすべて今のまま"}`
   // ─── おとなのAI講座 第7回：Codex に仕事を任せる（2026-10-21。生活の例は Codex で試した文） ───
   {
     subhead: "第7回：AIエージェントに、小さな仕事を任せる", anchor: "adult-agent",
+    subnote: 'まだ「ChatGPT」のアプリが入っていない方は、ここから入れます（Codex はこのアプリの中にあります）：<a class="dl" href="https://apps.microsoft.com/detail/9PLM9XGG6VKS?hl=ja-JP&gl=JP" target="_blank" rel="noopener">Windows の方</a><a class="dl" href="https://chatgpt.com/ja-JP/download/" target="_blank" rel="noopener">Mac の方</a><small>Windows は Microsoft Store の「ChatGPT」（名前に Classic が付いていないほう）が開きます。Mac は「macOS 版をダウンロード」。スマホ・タブレットでは Codex は使えません。</small>',
     en: "① 仕事を頼む",
     kana: "AIエージェント（Codex）に任せる",
     tag: "t-course", tagLabel: "エージェント",
@@ -3038,6 +3043,12 @@ sections.forEach((sec) => {
     const m = c.subhead.match(/^(第\d+回)[：:]\s*(.*)$/);
     sh.innerHTML = m ? `<span class="kai-no">${m[1]}</span><span>${m[2]}</span>` : c.subhead;
     kai.appendChild(sh);
+    if (c.subnote) {   // 回の見出しの下の案内（2026-11-17 第7回：アプリのダウンロードのリンク。藤崎さん「Windows と Mac に分けるとか」）
+      const sn = document.createElement('div');
+      sn.className = 'subnote';
+      sn.innerHTML = c.subnote;
+      kai.appendChild(sn);
+    }
     body.appendChild(kai);
     host = kai;
   }
